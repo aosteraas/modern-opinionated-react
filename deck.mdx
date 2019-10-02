@@ -1,0 +1,515 @@
+import { Prism as Highlighter } from 'react-syntax-highlighter';
+import { okaidia, atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
+import { Image } from 'mdx-deck';
+import withHocSc from './static/with-hoc-sc.png';
+import noHocSc from './static/no-hocs-sc.png';
+
+export const theme = {
+  colors: {
+    text: '#fff',
+    background: '#000',
+    primary: '#08f',
+    secondary: '#f0f',
+    darkgray: '#333'
+  },
+  styles: {
+    // pre: {
+    //   color: 'secondary',
+    //   bg: 'darkgray'
+    // },
+    // code: {
+    //   color: 'secondary'
+    // }
+  }
+};
+
+# Writing Modern <br /> & Opinionated React
+
+---
+
+# Caveats
+
+- It’s modern today, maybe not tomorrow, welcome <br/>to the open plains of JavaScript
+- Strong opinions, not loosely held but subject to change
+
+---
+
+# Worlds Fastest Crash Course
+
+---
+
+## Declaring Components
+
+<Highlighter style={atomDark} language="jsx">
+  {`class AirlineFood extends Component<Props, State> {
+  state = { open: false };
+  render() {
+    return (
+      <div>
+        {this.props.text}
+        <p>What's the deal with airline food?</p>
+      </div>
+    );
+  }
+}
+`}
+</Highlighter>
+
+---
+
+## Declaring Components
+
+<Highlighter style={atomDark} language="jsx">
+  {`const AirlineFood: React.FC<Props> = props => {
+  return (
+    <div>
+      {props.text}
+      <p>What's the deal with airline food?</p>
+    </div>
+  );
+};
+`}
+</Highlighter>
+
+---
+
+## Declaring Components
+
+<Highlighter style={atomDark} language="jsx">
+  {`
+const AirlineFood: React.FC<Props> = props => {
+  const [open, setIsOpen] = useState(false);
+  return (
+    <div>
+      {props.text}
+      <p>What's the deal with airline food?</p>
+    </div>
+  );
+};
+`}
+</Highlighter>
+
+---
+
+# Component Lifecycle
+
+---
+
+## Mounting
+
+<Highlighter style={atomDark} language="jsx">
+  {`
+class AirlineFood extends Component<Props, State> {
+  // mounting
+  constructor(props: Props) {
+    super(props);
+  }
+  static getDerivedStateFromProps = (props: Props, state: State) => {};
+  componentDidMount = () => {};
+  render() {
+    return (
+      <div>
+        {this.props.text}
+      </div>
+    );
+  }
+}
+`}
+
+</Highlighter>
+
+---
+
+## Updating
+
+<Highlighter style={atomDark} language="jsx">
+  {`
+class AirlineFood extends Component<Props, State> {
+  // updating
+  componentDidUpdate = (prevProps: Props, prevState: State) => {};
+  shouldComponentUpdate = (nextProps: Props, nextState: State) => {
+    return false;
+  };
+  render() {
+    return (
+      <div>
+        {this.props.text}
+      </div>
+    );
+  }
+}
+`}
+
+</Highlighter>
+
+---
+
+## Unmounting
+
+<Highlighter style={atomDark} language="jsx">
+  {`
+class AirlineFood extends Component<Props, State> {
+  // unmounting
+  componentWillUnmount = () => {};
+}
+`}
+
+</Highlighter>
+
+---
+
+## Use what you need
+
+- You (probably) never need a constructor
+- Most work handled in `componentDidMount` and `componentDidUpdate`
+
+<Highlighter style={atomDark} language="jsx">
+  {`
+class AirlineFood extends Component<Props, State> {
+  // never do this
+  constructor(props: Props) {
+    super(props);
+    this.state = { open: false };
+    this.getFood = this.getFood.bind(this);
+  }
+  getFood() {
+    //
+  }
+}
+`}
+
+</Highlighter>
+
+---
+
+# React is Functional-ish
+
+<Highlighter style={atomDark} language="jsx">
+  {`
+const AirlineFood: React.FC<Props> = props => {
+  const [open, setIsOpen] = useState(false);
+  return (
+    <div>
+      {props.data.map((d, idx) => (
+        <p key={idx}>{d}</p>
+      ))}
+    </div>
+  );
+};
+`}
+
+</Highlighter>
+
+---
+
+## Functionalish React
+
+- Important with React e.g.: new state, intentional side effects
+- Important with Redux e.g.: only returning new state, debugging
+- Potentially representative in labour-market skill shift
+- A lot of new developers will indirectly and unknowingly learn functional programming concepts this way
+
+---
+
+# Opinion Time
+
+---
+
+# Always use create-react-app
+
+### Unless you have a damn good reason not to
+
+---
+
+# create-react-app
+
+- Easy to use: `npx create-react-app modern-react --typescript`
+- Sensible defaults:
+  - Linting
+  - Minification
+  - Webpack and babel config, modern JS
+  - Test runner
+  - CSS & SCSS support, autoprefixing
+  - Static asset imports
+  - Battle tested and proven
+
+---
+
+# Avoid Higher Order Components
+
+### Where practical.
+
+---
+
+# Avoid HOCs
+
+### They are not fun to type
+
+<Highlighter style={atomDark} language="tsx">
+  {`
+// props for our HOC
+export interface WithThemeProps {
+  primaryColor: string;
+}
+// Props for our actual component
+export interface Props extends WithThemeProps {
+  children: React.ReactNode;
+}
+// the HOC itself
+export function withTheme<T extends WithThemeProps = WithThemeProps>(
+  WrappedComponent: React.ComponentType<T>
+) {
+  // render wrapped component
+  return class ComponentWithTheme extends React.Component<T, WithThemeProps> {
+    // a method to get the theme
+    getThemeProps = () => {};
+    render() {
+      // Fetch props to inject
+      const themeProps = this.getThemeProps();
+      // apply the necessary props
+      return <WrappedComponent {...themeProps} {...(this.props as T)} />;
+    }
+  };
+}
+// The component we are rendering
+export class MyButton extends React.Component<Props> {
+  // The theme values are also available as props here.
+  internalMethod = () => {
+    const color = this.props.primaryColor;
+  };
+  render() {
+    return <button>submit</button>;
+  }
+}
+`}
+</Highlighter>
+
+---
+
+<Image src={withHocSc} />
+
+---
+
+<Image src={noHocSc} />
+
+---
+
+# Function Components<br/>over Class Components
+
+### Also where practical which is 99% of the time
+
+---
+
+# Functions over Classes
+
+- Easier for humans and computers to understand
+- No use of this
+- Colocated lifecycle functionality
+- Easier to share logic
+- The most common component in contemporary React
+
+---
+
+# Functions over Classes
+
+<div style={{display:`flex`}}>
+<Highlighter style={atomDark} language="tsx">
+  {`const FnComp = () => {
+  return (
+    <div>
+      <p>content</p>
+    </div>
+  );
+};
+`}
+</Highlighter>
+
+<Highlighter style={atomDark} language="tsx">
+  {`class ClassComp extends React.Component {
+  render() {
+    return (
+      <div>
+        <p>content</p>
+      </div>
+    );
+  }
+}`}
+</Highlighter>
+
+</div>
+
+---
+
+# Pick a style and stick to it
+
+---
+
+# Pick a style and stick to it
+
+<div style={{display:`flex`}}>
+<div style={{display:`flex`, flexDirection: 'column'}}>
+<h2 style={{textAlign:'center'}}>Do This</h2>
+
+<Highlighter style={atomDark} language="tsx">
+  {`const MyComponent: React.FC = () => {
+  const handleClick = (e: MouseEvent) => {
+    // do something
+  };
+  return (
+    <div>
+      <p>things</p>
+    </div>
+  );
+};
+`}
+</Highlighter>
+</div>
+<div style={{display:`flex`, flexDirection: 'column'}}>
+<h2 style={{textAlign:'center'}}>Or This</h2>
+<Highlighter style={atomDark} language="tsx">
+  {`const MyComponent: React.FC = () => {
+  function handleClick(e: MouseEvent) {
+    // do something
+  }
+  return (
+    <div>
+      <p>things</p>
+    </div>
+  );
+};`}
+</Highlighter>
+
+</div>
+</div>
+
+---
+
+# Pick a style and stick to it
+
+## Just don't do this
+
+<Highlighter style={atomDark} language="tsx">
+  {`class BadForm extends React.Component {
+  componentDidMount() {
+    //
+  }
+  handleClick = () => {
+    //
+  };
+}`}
+</Highlighter>
+
+---
+
+# ABD
+
+### Always be Destructuring
+
+---
+
+# ABD
+
+<div style={{display:`flex`}}>
+<div style={{display:`flex`, flexDirection: 'column'}}>
+<h2 style={{textAlign:'center'}}>Do This</h2>
+
+<Highlighter style={atomDark} language="tsx">
+  {`const ABD: React.FC<Props> = ({
+    msg,
+    data,
+    nest
+  }) => {
+  const { anotherOne } = nest;
+  return (
+    <div>
+      <p>
+        {msg} - {anotherOne}
+      </p>
+      {data.map((d, idx) => (
+        <span key={idx}>{d}</span>
+      ))}
+    </div>
+  );
+};
+`}
+</Highlighter>
+</div>
+<div style={{display:`flex`, flexDirection: 'column'}}>
+<h2 style={{textAlign:'center'}}>Not This</h2>
+<Highlighter style={atomDark} customStyle={{flex:1}} language="tsx">
+  {`class NoDesctruct extends React.Component<Props> {
+  render() {
+    return (
+      <div>
+        <p>
+          {this.props.msg} - {this.props.nest.anotherOne}
+        </p>
+        {this.props.data.map((d, idx) => (
+          <span key={idx}>{d}</span>
+        ))}
+      </div>
+    );
+  }
+}
+`}
+
+</Highlighter>
+
+</div>
+</div>
+
+---
+
+# Create conventional component APIs
+
+### No exceptions.
+
+---
+
+# Component APIs
+
+<div style={{ overflow: 'auto' }}>
+  <Highlighter style={atomDark} customStyle={{ overflow: 'unset' }} language="tsx">
+    {`const App = () => {
+  const [name, setName] = useState('');
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+  };
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };
+  return (
+    <div>
+      <SimpleForm handleChange={handleChange} handleSubmit={handleSubmit} />
+    </div>
+  );
+};`}
+</Highlighter>
+
+<Highlighter style={atomDark} customStyle={{ overflow: 'unset' }} language="tsx">
+  {`const SimpleForm: React.FC<GoodProps> = ({ handleSubmit, handleChange }) => {
+  return (
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="name">Name</label>
+      <input onChange={handleChange} type="text" name="name" />
+    </form>
+  );
+};`}
+</Highlighter>
+
+<Highlighter style={atomDark} customStyle={{ overflow: 'unset' }} language="tsx">
+  {`
+interface GoodProps {
+  handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  // onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+}`}
+</Highlighter>
+
+<Highlighter style={atomDark} customStyle={{ overflow: 'unset' }} language="tsx">
+    {`interface BadProps {
+  keyboardCallback: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  formSubmission: (e: React.FormEvent) => void;
+}`}
+  </Highlighter>
+</div>
