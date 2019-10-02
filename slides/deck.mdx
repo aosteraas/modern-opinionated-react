@@ -1,25 +1,20 @@
-import { Prism as Highlighter } from 'react-syntax-highlighter';
-import { okaidia, atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 import { Image } from 'mdx-deck';
-import withHocSc from './static/with-hoc-sc.png';
-import noHocSc from './static/no-hocs-sc.png';
+import withHocSc from '../static/with-hoc-sc.png';
+import noHocSc from '../static/no-hocs-sc.png';
+import { DeclaringComponents, CodeBlock } from './components';
 
 export const theme = {
   colors: {
     text: '#fff',
-    background: '#000',
+    background: '#130a3e',
     primary: '#08f',
     secondary: '#f0f',
     darkgray: '#333'
   },
   styles: {
-    // pre: {
-    //   color: 'secondary',
-    //   bg: 'darkgray'
-    // },
-    // code: {
-    //   color: 'secondary'
-    // }
+    li: {
+      marginBottom: '2rem'
+    }
   }
 };
 
@@ -40,26 +35,13 @@ export const theme = {
 
 ## Declaring Components
 
-<Highlighter style={atomDark} language="jsx">
-  {`class AirlineFood extends Component<Props, State> {
-  state = { open: false };
-  render() {
-    return (
-      <div>
-        {this.props.text}
-        <p>What's the deal with airline food?</p>
-      </div>
-    );
-  }
-}
-`}
-</Highlighter>
+<DeclaringComponents />
 
 ---
 
 ## Declaring Components
 
-<Highlighter style={atomDark} language="jsx">
+<CodeBlock>
   {`const AirlineFood: React.FC<Props> = props => {
   return (
     <div>
@@ -69,13 +51,13 @@ export const theme = {
   );
 };
 `}
-</Highlighter>
+</CodeBlock>
 
 ---
 
 ## Declaring Components
 
-<Highlighter style={atomDark} language="jsx">
+<CodeBlock>
   {`
 const AirlineFood: React.FC<Props> = props => {
   const [open, setIsOpen] = useState(false);
@@ -87,7 +69,7 @@ const AirlineFood: React.FC<Props> = props => {
   );
 };
 `}
-</Highlighter>
+</CodeBlock>
 
 ---
 
@@ -97,7 +79,7 @@ const AirlineFood: React.FC<Props> = props => {
 
 ## Mounting
 
-<Highlighter style={atomDark} language="jsx">
+<CodeBlock>
   {`
 class AirlineFood extends Component<Props, State> {
   // mounting
@@ -116,13 +98,13 @@ class AirlineFood extends Component<Props, State> {
 }
 `}
 
-</Highlighter>
+</CodeBlock>
 
 ---
 
 ## Updating
 
-<Highlighter style={atomDark} language="jsx">
+<CodeBlock>
   {`
 class AirlineFood extends Component<Props, State> {
   // updating
@@ -140,13 +122,13 @@ class AirlineFood extends Component<Props, State> {
 }
 `}
 
-</Highlighter>
+</CodeBlock>
 
 ---
 
 ## Unmounting
 
-<Highlighter style={atomDark} language="jsx">
+<CodeBlock>
   {`
 class AirlineFood extends Component<Props, State> {
   // unmounting
@@ -154,7 +136,7 @@ class AirlineFood extends Component<Props, State> {
 }
 `}
 
-</Highlighter>
+</CodeBlock>
 
 ---
 
@@ -163,7 +145,7 @@ class AirlineFood extends Component<Props, State> {
 - You (probably) never need a constructor
 - Most work handled in `componentDidMount` and `componentDidUpdate`
 
-<Highlighter style={atomDark} language="jsx">
+<CodeBlock>
   {`
 class AirlineFood extends Component<Props, State> {
   // never do this
@@ -178,13 +160,13 @@ class AirlineFood extends Component<Props, State> {
 }
 `}
 
-</Highlighter>
+</CodeBlock>
 
 ---
 
 # React is Functional-ish
 
-<Highlighter style={atomDark} language="jsx">
+<CodeBlock>
   {`
 const AirlineFood: React.FC<Props> = props => {
   const [open, setIsOpen] = useState(false);
@@ -198,11 +180,11 @@ const AirlineFood: React.FC<Props> = props => {
 };
 `}
 
-</Highlighter>
+</CodeBlock>
 
 ---
 
-## Functionalish React
+## Functional-ish React
 
 - Important with React e.g.: new state, intentional side effects
 - Important with Redux e.g.: only returning new state, debugging
@@ -231,7 +213,7 @@ const AirlineFood: React.FC<Props> = props => {
   - Test runner
   - CSS & SCSS support, autoprefixing
   - Static asset imports
-  - Battle tested and proven
+- Battle tested and proven
 
 ---
 
@@ -243,9 +225,9 @@ const AirlineFood: React.FC<Props> = props => {
 
 # Avoid HOCs
 
-### They are not fun to type
+### They are _not fun_ to type
 
-<Highlighter style={atomDark} language="tsx">
+<CodeBlock>
   {`
 // props for our HOC
 export interface WithThemeProps {
@@ -282,7 +264,7 @@ export class MyButton extends React.Component<Props> {
   }
 }
 `}
-</Highlighter>
+</CodeBlock>
 
 ---
 
@@ -313,7 +295,7 @@ export class MyButton extends React.Component<Props> {
 # Functions over Classes
 
 <div style={{display:`flex`}}>
-<Highlighter style={atomDark} language="tsx">
+<CodeBlock>
   {`const FnComp = () => {
   return (
     <div>
@@ -322,9 +304,9 @@ export class MyButton extends React.Component<Props> {
   );
 };
 `}
-</Highlighter>
+</CodeBlock>
 
-<Highlighter style={atomDark} language="tsx">
+<CodeBlock>
   {`class ClassComp extends React.Component {
   render() {
     return (
@@ -334,7 +316,7 @@ export class MyButton extends React.Component<Props> {
     );
   }
 }`}
-</Highlighter>
+</CodeBlock>
 
 </div>
 
@@ -350,7 +332,7 @@ export class MyButton extends React.Component<Props> {
 <div style={{display:`flex`, flexDirection: 'column'}}>
 <h2 style={{textAlign:'center'}}>Do This</h2>
 
-<Highlighter style={atomDark} language="tsx">
+<CodeBlock>
   {`const MyComponent: React.FC = () => {
   const handleClick = (e: MouseEvent) => {
     // do something
@@ -362,11 +344,11 @@ export class MyButton extends React.Component<Props> {
   );
 };
 `}
-</Highlighter>
+</CodeBlock>
 </div>
 <div style={{display:`flex`, flexDirection: 'column'}}>
 <h2 style={{textAlign:'center'}}>Or This</h2>
-<Highlighter style={atomDark} language="tsx">
+<CodeBlock>
   {`const MyComponent: React.FC = () => {
   function handleClick(e: MouseEvent) {
     // do something
@@ -377,7 +359,7 @@ export class MyButton extends React.Component<Props> {
     </div>
   );
 };`}
-</Highlighter>
+</CodeBlock>
 
 </div>
 </div>
@@ -388,7 +370,7 @@ export class MyButton extends React.Component<Props> {
 
 ## Just don't do this
 
-<Highlighter style={atomDark} language="tsx">
+<CodeBlock>
   {`class BadForm extends React.Component {
   componentDidMount() {
     //
@@ -397,7 +379,7 @@ export class MyButton extends React.Component<Props> {
     //
   };
 }`}
-</Highlighter>
+</CodeBlock>
 
 ---
 
@@ -413,7 +395,7 @@ export class MyButton extends React.Component<Props> {
 <div style={{display:`flex`, flexDirection: 'column'}}>
 <h2 style={{textAlign:'center'}}>Do This</h2>
 
-<Highlighter style={atomDark} language="tsx">
+<CodeBlock>
   {`const ABD: React.FC<Props> = ({
     msg,
     data,
@@ -432,13 +414,18 @@ export class MyButton extends React.Component<Props> {
   );
 };
 `}
-</Highlighter>
+</CodeBlock>
+
 </div>
+
 <div style={{display:`flex`, flexDirection: 'column'}}>
+
 <h2 style={{textAlign:'center'}}>Not This</h2>
-<Highlighter style={atomDark} customStyle={{flex:1}} language="tsx">
+
+<CodeBlock >
   {`class NoDesctruct extends React.Component<Props> {
   render() {
+    // const { msg, data, nest } = this.props;
     return (
       <div>
         <p>
@@ -453,10 +440,18 @@ export class MyButton extends React.Component<Props> {
 }
 `}
 
-</Highlighter>
+</CodeBlock>
 
 </div>
 </div>
+
+---
+
+# ABD
+
+Rename as the need arises or it makes sense.
+
+<CodeBlock>{` const { poorlyNamedItem: data } = props.meta; `}</CodeBlock>
 
 ---
 
@@ -469,24 +464,24 @@ export class MyButton extends React.Component<Props> {
 # Component APIs
 
 <div style={{ overflow: 'auto' }}>
-  <Highlighter style={atomDark} customStyle={{ overflow: 'unset' }} language="tsx">
+  <CodeBlock customStyle={{ overflow: 'unset' }}>
     {`const App = () => {
-  const [name, setName] = useState('');
+  const [name, setName] = useState('');\n
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-  };
+  };\n
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-  };
+  };\n
   return (
     <div>
       <SimpleForm handleChange={handleChange} handleSubmit={handleSubmit} />
     </div>
   );
 };`}
-</Highlighter>
+</CodeBlock>
 
-<Highlighter style={atomDark} customStyle={{ overflow: 'unset' }} language="tsx">
+<CodeBlock customStyle={{ overflow: 'unset' }}>
   {`const SimpleForm: React.FC<GoodProps> = ({ handleSubmit, handleChange }) => {
   return (
     <form onSubmit={handleSubmit}>
@@ -495,21 +490,21 @@ export class MyButton extends React.Component<Props> {
     </form>
   );
 };`}
-</Highlighter>
+</CodeBlock>
 
-<Highlighter style={atomDark} customStyle={{ overflow: 'unset' }} language="tsx">
+<CodeBlock customStyle={{ overflow: 'unset' }}>
   {`
 interface GoodProps {
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
   // onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }`}
-</Highlighter>
+</CodeBlock>
 
-<Highlighter style={atomDark} customStyle={{ overflow: 'unset' }} language="tsx">
+<CodeBlock customStyle={{ overflow: 'unset' }}>
     {`interface BadProps {
   keyboardCallback: (e: React.ChangeEvent<HTMLInputElement>) => void;
   formSubmission: (e: React.FormEvent) => void;
 }`}
-  </Highlighter>
+</CodeBlock>
 </div>
