@@ -1,4 +1,4 @@
-import { Image } from 'mdx-deck';
+import { Image, Notes } from 'mdx-deck';
 import withHocSc from '../static/with-hoc-sc.png';
 import noHocSc from '../static/no-hocs-sc.png';
 import { DeclaringComponents, CodeBlock } from './components';
@@ -22,24 +22,37 @@ export const theme = {
 
 ---
 
-# Caveats
+# The Caveat
 
-- It’s modern today, maybe not tomorrow, welcome <br/>to the open plains of JavaScript
-- Strong opinions, not loosely held but subject to change
+### You only have so much decision capital or willpower<br/> on a given day, make everything possible second nature.
+
+- ### It’s modern today, maybe not tomorrow, welcome <br/>to the open plains of JavaScript
+
+- ### The following opinions have an overarching theme, reducing your cognitive load.
+
+---
+
+# But First
 
 ---
 
 # Worlds Fastest Crash Course
 
+### A speedy run through of some essentials
+
 ---
 
 ## Declaring Components
+
+### Class Components
 
 <DeclaringComponents />
 
 ---
 
 ## Declaring Components
+
+### Function Components
 
 <CodeBlock>
   {`const AirlineFood: React.FC<Props> = props => {
@@ -56,6 +69,8 @@ export const theme = {
 ---
 
 ## Declaring Components
+
+### Function Components with State
 
 <CodeBlock>
   {`
@@ -74,6 +89,8 @@ const AirlineFood: React.FC<Props> = props => {
 ---
 
 # Component Lifecycle
+
+<Notes>The order in which things happen</Notes>
 
 ---
 
@@ -146,8 +163,7 @@ class AirlineFood extends Component<Props, State> {
 - Most work handled in `componentDidMount` and `componentDidUpdate`
 
 <CodeBlock>
-  {`
-class AirlineFood extends Component<Props, State> {
+  {`class AirlineFood extends Component<Props, State> {
   // never do this
   constructor(props: Props) {
     super(props);
@@ -193,6 +209,34 @@ const AirlineFood: React.FC<Props> = props => {
 
 ---
 
+## Functional-ish React
+
+A popular feature of many FP languages is pattern matching. This is the current
+proposal in stage 1
+
+<CodeBlock>
+  {`const res = await fetch(jsonService)
+case (res) {
+  when {status: 200, headers: {'Content-Length': s}} ->
+    console.log(\`size is \${s}\`),
+  when {status: 404} ->
+    console.log('JSON not found'),
+  when {status} if (status >= 400) -> {
+    throw new RequestError(res)
+  },
+}`}
+</CodeBlock>
+
+---
+
+## Functional-ish React
+
+And it's _quite_ similar to pattern matching in languages like Elixir
+
+TODO
+
+---
+
 # Opinion Time
 
 ---
@@ -214,6 +258,7 @@ const AirlineFood: React.FC<Props> = props => {
   - CSS & SCSS support, autoprefixing
   - Static asset imports
 - Battle tested and proven
+- You can always `eject`
 
 ---
 
@@ -228,8 +273,7 @@ const AirlineFood: React.FC<Props> = props => {
 ### They are _not fun_ to type
 
 <CodeBlock>
-  {`
-// props for our HOC
+  {`// props for our HOC
 export interface WithThemeProps {
   primaryColor: string;
 }
@@ -252,9 +296,10 @@ export function withTheme<T extends WithThemeProps = WithThemeProps>(
       return <WrappedComponent {...themeProps} {...(this.props as T)} />;
     }
   };
-}
-// The component we are rendering
-export class MyButton extends React.Component<Props> {
+}`}
+</CodeBlock>
+<CodeBlock>
+{`export class MyButton extends React.Component<Props> {
   // The theme values are also available as props here.
   internalMethod = () => {
     const color = this.props.primaryColor;
@@ -285,14 +330,18 @@ export class MyButton extends React.Component<Props> {
 # Functions over Classes
 
 - Easier for humans and computers to understand
-- No use of this
+- No use of this (a semi big deal; reasons to come)
 - Colocated lifecycle functionality
-- Easier to share logic
+- _Way_ easier to share logic
 - The most common component in contemporary React
 
 ---
 
 # Functions over Classes
+
+### Simpler Declarations
+
+Much more to come on this.
 
 <div style={{display:`flex`}}>
 <CodeBlock>
@@ -508,3 +557,44 @@ interface GoodProps {
 }`}
 </CodeBlock>
 </div>
+
+---
+
+# Don't make me think
+
+<CodeBlock>
+{`<IncorrectBarcodeModal
+  isActive={this.state.showIncorrectBarcodeModal}
+  closeModalHandler={() =>
+    this.setState({ showIncorrectBarcodeModal: false })
+  }
+/>
+
+<ModalWrapper
+  isActive={showModal}
+  hasCloseButton={true}
+  onCloseHandler={() => {
+    setModalVisibility(false);
+  }}
+  classNames="z-max"
+    >
+
+<ConfirmAndProceedBox
+    marketing_opt_in={this.props.marketing_opt_in}
+    termsAndConditionsChecked={
+  this.props.termsAndConditionsChecked
+    }
+    marketingOffersCallback={checked =>
+  this.props.marketingOffersChanged(checked)
+    }
+    termsAndConditionsCallback={checked =>
+  this.props.termsAndConditionsChanged(checked)
+    }
+  />`}
+</CodeBlock>
+
+---
+
+# Project Structure
+
+### Use what makes sense, but also do what I tell you
