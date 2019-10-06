@@ -1,4 +1,4 @@
-import { Image, Notes } from 'mdx-deck';
+import { Image, Notes, Appear, Split } from 'mdx-deck';
 import withHocSc from '../static/with-hoc-sc.png';
 import noHocSc from '../static/no-hocs-sc.png';
 import { DeclaringComponents, CodeBlock } from './components';
@@ -20,15 +20,37 @@ export const theme = {
 
 # Writing Modern <br /> & Opinionated React
 
+<Notes>Modern as of now, maybe not in a year</Notes>
+
 ---
 
-# The Caveat
+# React is unopinionated, so we need to be
 
-### You only have so much decision capital or willpower<br/> on a given day, make everything possible second nature.
+<Appear>
+  <div>
+    <CodeBlock>
+      {`return (
+  <div>
+    <p>Some kind of content</p>
+  </div>
+);
+`}
+    </CodeBlock>
+  </div>
+</Appear>
 
-- ### It’s modern today, maybe not tomorrow, welcome <br/>to the open plains of JavaScript
+<Notes>
+  React has a few rules, but those aside as long as your component returns JSX it is happy days
+</Notes>
 
-- ### The following opinions have an overarching theme, reducing your cognitive load.
+---
+
+# Guiding Principles
+
+1. Spend your decision capital wisely
+2. Be cognizant of your team's decision capital
+3. Apply conventions, known or inferred
+4. Generally choose safe over exiting
 
 ---
 
@@ -40,6 +62,8 @@ export const theme = {
 
 ### A speedy run through of some essentials
 
+<Notes>Declaring components and component lifecycle</Notes>
+
 ---
 
 ## Declaring Components
@@ -47,6 +71,8 @@ export const theme = {
 ### Class Components
 
 <DeclaringComponents />
+
+<Notes>Class component, it's just inheritance and implementation</Notes>
 
 ---
 
@@ -65,6 +91,8 @@ export const theme = {
 };
 `}
 </CodeBlock>
+
+<Notes>Nothing to implement, just return valid jsx</Notes>
 
 ---
 
@@ -86,6 +114,8 @@ const AirlineFood: React.FC<Props> = props => {
 `}
 </CodeBlock>
 
+<Notes>useState uses array destructuing, like a tuple in C#</Notes>
+
 ---
 
 # Component Lifecycle
@@ -97,8 +127,7 @@ const AirlineFood: React.FC<Props> = props => {
 ## Mounting
 
 <CodeBlock>
-  {`
-class AirlineFood extends Component<Props, State> {
+  {`class AirlineFood extends Component<Props, State> {
   // mounting
   constructor(props: Props) {
     super(props);
@@ -114,16 +143,18 @@ class AirlineFood extends Component<Props, State> {
   }
 }
 `}
-
 </CodeBlock>
+
+<Notes>
+  gDSFP return object to update state, doesn't have acccess to instance. Everything here is optional
+</Notes>
 
 ---
 
 ## Updating
 
 <CodeBlock>
-  {`
-class AirlineFood extends Component<Props, State> {
+  {`class AirlineFood extends Component<Props, State> {
   // updating
   componentDidUpdate = (prevProps: Props, prevState: State) => {};
   shouldComponentUpdate = (nextProps: Props, nextState: State) => {
@@ -146,8 +177,7 @@ class AirlineFood extends Component<Props, State> {
 ## Unmounting
 
 <CodeBlock>
-  {`
-class AirlineFood extends Component<Props, State> {
+  {`class AirlineFood extends Component<Props, State> {
   // unmounting
   componentWillUnmount = () => {};
 }
@@ -182,9 +212,18 @@ class AirlineFood extends Component<Props, State> {
 
 # React is Functional-ish
 
+- No mutation\*
+- Explicit side-effects
+- A whole lot of new copies of data
+
+\*Excludes component state in class components.
+
+---
+
+# React is Functional-ish
+
 <CodeBlock>
-  {`
-const AirlineFood: React.FC<Props> = props => {
+  {`const AirlineFood: React.FC<Props> = props => {
   const [open, setIsOpen] = useState(false);
   return (
     <div>
@@ -202,7 +241,7 @@ const AirlineFood: React.FC<Props> = props => {
 
 ## Functional-ish React
 
-- Important with React e.g.: new state, intentional side effects
+- Important with React e.g.: new state, explicit side effects
 - Important with Redux e.g.: only returning new state, debugging
 - Potentially representative in labour-market skill shift
 - A lot of new developers will indirectly and unknowingly learn functional programming concepts this way
@@ -233,7 +272,21 @@ case (res) {
 
 And it's _quite_ similar to pattern matching in languages like Elixir
 
-TODO
+<CodeBlock language="elixir">
+  {`defmodule Server.FileHandler do
+  def handle_file({:ok, content}, conv) do
+    %{conv | status: 200, resp_body: content}
+  end
+#
+  def handle_file({:error, :enoent}, conv) do
+    %{conv | status: 404, resp_body: "File not found!"}
+  end
+#
+  def handle_file({:error, reason}, conv) do
+    %{conv | status: 500, resp_body: "File error: #{reason}"}
+  end
+end`}
+</CodeBlock>
 
 ---
 
@@ -540,6 +593,14 @@ Rename as the need arises or it makes sense.
   );
 };`}
 </CodeBlock>
+
+</div>
+
+---
+
+# Component APIs
+
+<div style={{ overflow: 'auto' }}>
 
 <CodeBlock customStyle={{ overflow: 'unset' }}>
   {`

@@ -4,9 +4,15 @@ import { atomDark } from 'react-syntax-highlighter/dist/esm/styles/prism';
 
 import { defaultProps } from 'prism-react-renderer';
 
-export function CodeBlock({ children, customStyle }) {
+export function CodeBlock({ children, customStyle, language = 'tsx' }) {
   return (
-    <Highlight {...defaultProps} code={children} language="tsx" style={atomDark} customStyle={customStyle} >
+    <Highlight
+      {...defaultProps}
+      code={children}
+      language={language}
+      style={atomDark}
+      customStyle={customStyle}
+    >
       {({ className, style, tokens, getLineProps, getTokenProps }) => (
         <pre className={className} style={{ ...style, padding: '20px' }}>
           {tokens.map((line, i) => (
