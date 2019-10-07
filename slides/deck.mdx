@@ -1,6 +1,7 @@
 import { Image, Notes, Appear, Split } from 'mdx-deck';
 import withHocSc from '../static/with-hoc-sc.png';
 import noHocSc from '../static/no-hocs-sc.png';
+import projectStructure from '../static/project-structure.png';
 import { DeclaringComponents, CodeBlock } from './components';
 
 export const theme = {
@@ -239,7 +240,7 @@ const AirlineFood: React.FC<Props> = props => {
 
 ---
 
-## Functional-ish React
+# Functional-ish React
 
 - Important with React e.g.: new state, explicit side effects
 - Important with Redux e.g.: only returning new state, debugging
@@ -266,6 +267,11 @@ case (res) {
 }`}
 </CodeBlock>
 
+<Notes>
+  JS has been through a few years of rapid change and improvement, and in the JS world new features,
+  syntaxes, etc, become commonly used faster than in other languages/ecosystems
+</Notes>
+
 ---
 
 ## Functional-ish React
@@ -288,9 +294,14 @@ And it's _quite_ similar to pattern matching in languages like Elixir
 end`}
 </CodeBlock>
 
+<Notes>
+  Similar to method overloading but you don't check object internals first and if/else it you just
+  call the method with the object and let the runtime figure it out
+</Notes>
+
 ---
 
-# Opinion Time
+# Opinionated React
 
 ---
 
@@ -325,7 +336,9 @@ end`}
 
 ### They are _not fun_ to type
 
-<CodeBlock>
+<div style={{overflow:'auto'}}>
+
+<CodeBlock customStyle={{overflow:'unset'}}>
   {`// props for our HOC
 export interface WithThemeProps {
   primaryColor: string;
@@ -364,6 +377,8 @@ export function withTheme<T extends WithThemeProps = WithThemeProps>(
 `}
 </CodeBlock>
 
+</div>
+
 ---
 
 <Image src={withHocSc} />
@@ -383,7 +398,7 @@ export function withTheme<T extends WithThemeProps = WithThemeProps>(
 # Functions over Classes
 
 - Easier for humans and computers to understand
-- No use of this (a semi big deal; reasons to come)
+- No use of `this` (a semi big deal; reasons to come)
 - Colocated lifecycle functionality
 - _Way_ easier to share logic
 - The most common component in contemporary React
@@ -393,8 +408,6 @@ export function withTheme<T extends WithThemeProps = WithThemeProps>(
 # Functions over Classes
 
 ### Simpler Declarations
-
-Much more to come on this.
 
 <div style={{display:`flex`}}>
 <CodeBlock>
@@ -421,6 +434,8 @@ Much more to come on this.
 </CodeBlock>
 
 </div>
+
+<Notes>A new render means a new component</Notes>
 
 ---
 
@@ -596,6 +611,8 @@ Rename as the need arises or it makes sense.
 
 </div>
 
+<Notes>Name props and whatever those are identically and keep them consistent.</Notes>
+
 ---
 
 # Component APIs
@@ -634,37 +651,36 @@ interface GoodProps {
 <ModalWrapper
   isActive={showModal}
   hasCloseButton={true}
-  onCloseHandler={() => {
-    setModalVisibility(false);
+  onCloseHandler={() => {
+    setModalVisibility(false);
   }}
-  classNames="z-max"
-    >
+/>
 
 <ConfirmAndProceedBox
-    marketing_opt_in={this.props.marketing_opt_in}
-    termsAndConditionsChecked={
-  this.props.termsAndConditionsChecked
-    }
-    marketingOffersCallback={checked =>
-  this.props.marketingOffersChanged(checked)
-    }
-    termsAndConditionsCallback={checked =>
-  this.props.termsAndConditionsChanged(checked)
-    }
-  />`}
+  marketing_opt_in={this.props.marketing_opt_in}
+  termsAndConditionsChecked={
+    this.props.termsAndConditionsChecked
+  }
+  marketingOffersCallback={checked =>
+    this.props.marketingOffersChanged(checked)
+  }
+  termsAndConditionsCallback={checked =>
+    this.props.termsAndConditionsChanged(checked)
+  }
+ />`}
 </CodeBlock>
 
 ---
 
 # Project Structure
 
-### Use what makes sense, but also do what I tell you
+### There are no rules but also there are
 
 ---
 
 # Project Structure
 
-Show good and bad
+<Image src={projectStructure} size="contain" />
 
 ---
 
