@@ -768,7 +768,7 @@ interface GoodProps {
 
 <Horizontal>
 
-<CodeBlock customStyle={{ padding: 0, fontSize: `50px` }}>
+<CodeBlock customStyle={{ paddingLeft: 0, paddingRight: 0, fontSize: `50px` }}>
   {`const Fragments = () => {
   return (
     <React.Fragment>
@@ -779,7 +779,7 @@ interface GoodProps {
 };`}
 </CodeBlock>
 
-<CodeBlock customStyle={{ padding: 0, fontSize: `50px` }}>
+<CodeBlock customStyle={{ paddingLeft: 0, paddingRight: 0, fontSize: `50px` }}>
   {`const Fragments = () => {
   return (
     <Fragment>
@@ -790,7 +790,7 @@ interface GoodProps {
 };`}
 </CodeBlock>
 
-<CodeBlock customStyle={{ padding: 0, fontSize: `50px` }}>
+<CodeBlock customStyle={{ paddingLeft: 0, paddingRight: 0, fontSize: `50px` }}>
   {`const Fragments = () => {
   return (
     <>
@@ -805,8 +805,109 @@ interface GoodProps {
 
 ---
 
+# Decomposing into Components
+
+### Make components when it makes sense
+
+---
+
+# Decomposing into Components
+
+<CodeBlock>
+  {`const App = () => {
+  const items = getItems();
+  const comments = getComments();
+  return (
+    <main>
+      <header>My Cool Page</header>
+      <section>
+        {items.map((item, index) => (
+          <article key={index}>
+            <h2>{item.title}</h2>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </section>
+      <section>
+        {comments.map((cmt, index) => (
+          <article key={index}>
+            <p>{cmt.comment}</p>
+            <small>By {cmt.author}</small>
+          </article>
+        ))}
+      </section>
+    </main>
+  );
+};`}
+</CodeBlock>
+
+---
+
+# Decomposing into Components
+
+<Horizontal>
+
+<CodeBlock customStyle={{ fontSize: `50px` }}>
+  {`const Items: React.FC<ItemProps> = ({
+  items
+}) => {
+  return (
+    <section>
+      {items.map((item, index) => (
+        <article key={index}>
+          <h2>{item.title}</h2>
+          <p>{item.body}</p>
+        </article>
+      ))}
+    </section>
+  );
+};`}
+</CodeBlock>
+
+<CodeBlock customStyle={{ fontSize: `50px` }}>
+  {`const Comments: React.FC<CommentProps> = ({
+  comments
+}) => {
+  return (
+    <section>
+      {comments.map((cmt, index) => (
+        <article key={index}>
+          <p>{cmt.comment}</p>
+          <small>By {cmt.author}</small>
+        </article>
+      ))}
+    </section>
+  );
+};`}
+</CodeBlock>
+
+</Horizontal>
+
+---
+
+# Decomposing into Components
+
+<CodeBlock>
+  {`const App = () => {
+  const items: Item[] = getItems();
+  const comments: Comment[] = getComments();
+  return (
+    <main>
+      <header>My Cool Page</header>
+      <Items items={items} />
+      <Comments comments={comments} />
+    </main>
+  );
+};`}
+</CodeBlock>
+
+---
+
+# Functions Over Classes
+
+---
+
 # TODO
 
-3. When to decompose components (todo list example)
 4. Why not using classes is a great thing (PM example)
 5. Hooks, all about hooks.
