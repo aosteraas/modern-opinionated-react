@@ -14,7 +14,7 @@ const App = () => {
     </div>
   );
 };
-
+//
 const SimpleForm: React.FC<GoodProps> = ({ handleSubmit, handleChange }) => {
   return (
     <form onSubmit={handleSubmit}>
@@ -23,14 +23,14 @@ const SimpleForm: React.FC<GoodProps> = ({ handleSubmit, handleChange }) => {
     </form>
   );
 };
-
+//
 interface GoodProps {
   handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
   // onChange: (e: ChangeEvent<HTMLInputElement>) => void;
   // onChange: () => void;
 }
-
+//
 interface BadProps {
   keyboardCallback: (e: React.ChangeEvent<HTMLInputElement>) => void;
   formSubmission: (e: React.FormEvent) => void;
