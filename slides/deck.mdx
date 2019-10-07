@@ -1,4 +1,4 @@
-import { Image, Notes, Appear, Split } from 'mdx-deck';
+import { Image, Notes, Appear, Split, Horizontal } from 'mdx-deck';
 import withHocSc from '../static/with-hoc-sc.png';
 import noHocSc from '../static/no-hocs-sc.png';
 import projectStructure from '../static/project-structure.png';
@@ -737,15 +737,76 @@ interface GoodProps {
 # Use Fragments, not extraneous divs
 
 <CodeBlock>
-
+  {`const AngryReact = () => {
+  return (
+      <p>Some kind of content</p>
+      <p>Another kind of content</p>
+  );
+}`}
 </CodeBlock>
+
+<Notes>JSX needs strictly one parent</Notes>
+
+---
+
+# Use Fragments, not extraneous divs
+
+<CodeBlock>
+  {`const NoFragments = () => {
+  return (
+    <div>
+      <p>Some kind of content</p>
+      <p>Another kind of content</p>
+    </div>
+  );
+};`}
+</CodeBlock>
+
+---
+
+# How good are Fragments?
+
+<Horizontal>
+
+<CodeBlock customStyle={{ padding: 0, fontSize: `50px` }}>
+  {`const Fragments = () => {
+  return (
+    <React.Fragment>
+      <p>Some kind of content</p>
+      <p>Another kind of content</p>
+    </React.Fragment>
+  );
+};`}
+</CodeBlock>
+
+<CodeBlock customStyle={{ padding: 0, fontSize: `50px` }}>
+  {`const Fragments = () => {
+  return (
+    <Fragment>
+      <p>Some kind of content</p>
+      <p>Another kind of content</p>
+    </Fragment>
+  );
+};`}
+</CodeBlock>
+
+<CodeBlock customStyle={{ padding: 0, fontSize: `50px` }}>
+  {`const Fragments = () => {
+  return (
+    <>
+      <p>Some kind of content</p>
+      <p>Another kind of content</p>
+    </>
+  );
+};`}
+</CodeBlock>
+
+</Horizontal>
 
 ---
 
 # TODO
 
-1. Semantic HTML
-2. Stop using divs for everything/use fragment
 3. When to decompose components (todo list example)
 4. Why not using classes is a great thing (PM example)
 5. Hooks, all about hooks.
