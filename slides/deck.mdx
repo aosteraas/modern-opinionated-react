@@ -2,7 +2,8 @@ import { Image, Notes, Appear, Split, Horizontal } from 'mdx-deck';
 import withHocSc from '../static/with-hoc-sc.png';
 import noHocSc from '../static/no-hocs-sc.png';
 import projectStructure from '../static/project-structure.png';
-import { DeclaringComponents, CodeBlock } from './components';
+import care from '../static/care.png';
+import { DeclaringComponents, CodeBlock, Care } from './components';
 
 export const theme = {
   colors: {
@@ -52,6 +53,7 @@ export const theme = {
 2. Be cognizant of your team's decision capital
 3. Apply conventions, known or inferred
 4. Generally choose safe over exiting
+5. Stay with, not necessarily ahead of, the curve
 
 ---
 
@@ -201,8 +203,11 @@ const AirlineFood: React.FC<Props> = props => {
     this.state = { open: false };
     this.getFood = this.getFood.bind(this);
   }
+  // state can be declared like so
+  state = { open: false };
+  // if you declared this as \`getFood = () => {}\`
+  // it's automatically bound
   getFood() {
-    //
   }
 }
 `}
@@ -245,7 +250,7 @@ const AirlineFood: React.FC<Props> = props => {
 - Important with React e.g.: new state, explicit side effects
 - Important with Redux e.g.: only returning new state, debugging
 - Potentially representative in labour-market skill shift
-- A lot of new developers will indirectly and unknowingly learn functional programming concepts this way
+- A lot of new developers will unknowingly learn functional programming concepts this way
 
 ---
 
@@ -642,25 +647,18 @@ interface GoodProps {
 
 <CodeBlock>
 {`<IncorrectBarcodeModal
-  isActive={this.state.showIncorrectBarcodeModal}
   closeModalHandler={() =>
     this.setState({ showIncorrectBarcodeModal: false })
   }
 />
 
 <ModalWrapper
-  isActive={showModal}
-  hasCloseButton={true}
   onCloseHandler={() => {
     setModalVisibility(false);
   }}
 />
 
 <ConfirmAndProceedBox
-  marketing_opt_in={this.props.marketing_opt_in}
-  termsAndConditionsChecked={
-    this.props.termsAndConditionsChecked
-  }
   marketingOffersCallback={checked =>
     this.props.marketingOffersChanged(checked)
   }
@@ -681,6 +679,56 @@ interface GoodProps {
 # Project Structure
 
 <Image src={projectStructure} size="contain" />
+
+<Notes>Components can be grouped by domain, page, category, whatever</Notes>
+
+---
+
+# Art Vandelay
+
+### Care about importing and exporting
+
+---
+
+# Art Vandelay
+
+<CodeBlock>
+  {`import React from 'react';
+import Button from '../ArtVandelay/Button';
+import Card from '../ArtVandelay/Card';
+import Table from '../ArtVandelay/Table';\n
+export const App: React.FC = () => {
+  return (
+    <div>
+      <Button disabled={false} type="button" />
+      <Card title="My Card" />
+      <Table />
+    </div>
+  );
+};`}
+</CodeBlock>
+
+---
+
+<CodeBlock>
+  {`// index.ts
+export * from './Button';
+export * from './Card';
+export * from './Table';\n
+// App.tsx
+import React from 'react';
+import { Button, Card, Table } from '../ArtVandelay';\n
+export const App: React.FC = () => {
+  return (
+    <>
+      <Button disabled={false} type="button" />
+      <Card title="My Card" />
+      <Table />
+    </>
+  );
+};
+`}
+</CodeBlock>
 
 ---
 
@@ -805,13 +853,13 @@ interface GoodProps {
 
 ---
 
-# Decomposing into Components
+# Decomposing JSX into Components
 
 ### Make components when it makes sense
 
 ---
 
-# Decomposing into Components
+# Decomposing JSX into Components
 
 <CodeBlock>
   {`const App = () => {
@@ -901,13 +949,240 @@ interface GoodProps {
 };`}
 </CodeBlock>
 
+<Notes>Est 35 minutes to this point</Notes>
+
 ---
 
 # Functions Over Classes
+
+<Appear>
+<div>
+<Care />
+</div>
+<h2>Class Abuse Resistance Education</h2>
+
+</Appear>
+
+---
+
+# Class Abuse Resistance Education
+
+<CodeBlock>
+  {`// wait for 5 milliseconds for keyboard to populate value in input
+if (this.props.element.type === 'text') {
+  setTimeout(() => {
+    this.switchTitle(this.props.element.value);
+  }, 5);
+}`}
+</CodeBlock>
+
+---
+
+# Big one
+
+<CodeBlock>
+  {`import React from 'react';
+import Keyboard from 'react-simple-keyboard';
+import { connect } from 'react-redux';
+import { remote } from 'electron';
+import { Dispatch } from 'redux';
+import scrollIntoView from 'scroll-into-view-if-needed';
+import { AppState } from '@/store';
+import { showKeyboard } from '@/store/Keyboard/actions';
+import 'react-simple-keyboard/build/css/index.css';
+import './Keyboard.scss';\n
+const keyboardLayout = {
+  default: [
+    '1 2 3 4 5 6 7 8 9 0 {bksp}',
+    '{tab} q w e r t y u i o p _',
+    '{lock} a s d f g h j k l /',
+    '{shift} z x c v b n m , . @',
+    '{kbdwn} {space}'
+  ],
+  shift: [
+    '1 2 3 4 5 6 7 8 9 0 {bksp}',
+    '{tab} ~ ! # \$ % ^ & \* ( ) _',
+    '{lock} \` " [ ] { } = + - /',
+    '{abc} | \\ < > ? ; : , . @',
+    '{kbdwn} {space}'
+  ],
+  lock: [
+    '1 2 3 4 5 6 7 8 9 0 {bksp}',
+    '{tab} Q W E R T Y U I O P _',
+    '{lock} A S D F G H J K L /',
+    '{shift} Z X C V B N M , . @',
+    '{kbdwn} {space}'
+  ],
+  number: [' 1 2 3', '{tab} 4 5 6', '{bksp} 7 8 9', '{kbdwn} 0']
+};\n
+const display = {
+  '{bksp}': 'delete',
+  '{shift}': '#+=',
+  '{abc}': 'abc',
+  '{kbdwn}': ' ',
+  '{tab}': 'tab',
+  '{rtab}': '&uarr;'
+};\n
+// Map keyboard events to https://electronjs.org/docs/api/accelerator
+const specialKeyMap = {
+  '{space}': ' ',
+  '{bksp}': 'Backspace',
+  '{tab}': 'Tab',
+  '{rtab}': 'shift+Tab'
+} as any;\n
+const buttonTheme = [
+  {
+    class: 'hide-keyboard-button',
+    buttons: '{kbdwn}'
+  }
+];\n
+interface AppKeyboardProps {
+  isActive: boolean;
+  form: string;
+  field: string;
+  element: HTMLInputElement;
+  showKeyboard: (show: boolean) => void;
+}\n
+interface AppKeyboardState {
+  layout: string;
+}
+class AppKeyboard extends React.Component<AppKeyboardProps, AppKeyboardState> {
+  state = { layout: 'lock' };
+  constructor(props: AppKeyboardProps) {
+    super(props);
+  }
+  componentDidUpdate = (prevProps: AppKeyboardProps) => {
+    const { field, element, isActive } = this.props;
+    if (prevProps.field !== field && element) {
+      const { type, value } = element;
+      let layout = 'default';
+      // decide layout for the input that has been focused.
+      switch (type) {
+        case 'tel':
+        case 'number':
+          layout = 'number';
+          this.setState({ layout });
+          break;
+        case 'email':
+          this.setState({ layout });
+          break;
+        case 'text':
+          this.switchTitle(value);
+        default:
+        break;
+      }
+    }
+    if (isActive) {
+      scrollIntoView(element, {
+        scrollMode: 'if-needed',
+        block: 'start',
+        inline: 'start',
+        behavior: 'instant'
+      });
+    }
+  };\n
+  onKeyPress = (button: string) => {
+    const { layout } = this.state;
+    if (['{shift}', '{abc}'].includes(button)) {
+      this.setState({
+        layout: layout === 'shift' ? 'default' : 'shift'
+      });
+    } else if (button === '{lock}') {
+      this.setState({
+        layout: layout === 'lock' ? 'default' : 'lock'
+      });
+    } else if (button === '{kbdwn}') {
+      this.props.element.blur();
+    } else {
+      setImmediate(() => {
+        let window = remote.webContents.getFocusedWebContents();
+        if (window) {
+          if (specialKeyMap[button]) {
+            let modifiers = specialKeyMap[button].split('+');\n
+            window.sendInputEvent({
+              type: 'keyDown',
+              //@ts-ignore
+              keyCode: modifiers[modifiers.length - 1],
+              modifiers: modifiers.length > 1 ? [modifiers[0]] : undefined
+            });
+          }
+          if (button.length > 1 && !specialKeyMap[button]) {
+            for (var i = 0; i < button.length; i++) {
+              window.sendInputEvent({
+                type: 'char',
+                //@ts-ignore
+                keyCode: button[i]
+              });
+            }
+          } else {
+            window.sendInputEvent({
+              type: 'char',
+              //@ts-ignore
+              keyCode: specialKeyMap[button] ? specialKeyMap[button] : button
+            });
+          }
+        }
+      });\n
+      if (this.props.element.type === 'text') {
+        setTimeout(() => {
+          this.switchTitle(this.props.element.value);
+        }, 5); /// wait for 5 milliseconds for keyboard to populate value in input
+      }
+    }
+  };\n
+  switchTitle = (value: string) => {
+    // Set layout to lock to get upper case letter after a space.
+    if (value.endsWith(' ') || value === '') {
+      this.setState({ layout: 'lock' });
+    } else {
+      this.setState({ layout: 'default' });
+    }
+  };\n
+  render() {
+    let keyboardClass = this.props.isActive ? 'active' : '';
+    if (this.state.layout === 'number') {
+      keyboardClass += ' number';
+    }
+    return (
+    <div id="keyboard" className={keyboardClass}>
+      <Keyboard
+      layout={keyboardLayout}
+      layoutName={this.state.layout}
+      inputName={this.props.field}
+      onKeyPress={(button: string) => this.onKeyPress(button)}
+      display={display}
+      buttonTheme={{ buttonTheme }}
+      mergeDisplay={true}
+      preventMouseDownDefault={true}
+      tabCharOnTab={false}
+      />
+    </div>
+    );
+  }
+}\n
+const mapStateToProps = ({ keyboard }: AppState) => ({
+isActive: keyboard.isActive,
+field: keyboard.field,
+form: keyboard.form,
+element: keyboard.element
+});\n
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+  showKeyboard: (show: boolean) => dispatch(showKeyboard(show))
+});
+\n
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(AppKeyboard);`}
+</CodeBlock>
+
+<Notes>asd</Notes>
 
 ---
 
 # TODO
 
-4. Why not using classes is a great thing (PM example)
-5. Hooks, all about hooks.
+1. Why not using classes & `this` is a great thing (PM example)
+2. colocated lifecycle logic
+3. Share logic with Hooks, comapre to clas
+   s
