@@ -3,6 +3,7 @@ import withHocSc from '../static/with-hoc-sc.png';
 import noHocSc from '../static/no-hocs-sc.png';
 import projectStructure from '../static/project-structure.png';
 import care from '../static/care.png';
+import keyboard from '../static/keyboard.png';
 import { DeclaringComponents, CodeBlock, Care } from './components';
 
 export const theme = {
@@ -247,6 +248,7 @@ const AirlineFood: React.FC<Props> = props => {
 
 # Functional-ish React
 
+- This is how you write idiomatic React
 - Important with React e.g.: new state, explicit side effects
 - Important with Redux e.g.: only returning new state, debugging
 - Potentially representative in labour-market skill shift
@@ -967,92 +969,18 @@ export const App: React.FC = () => {
 
 # Class Abuse Resistance Education
 
-<CodeBlock>
-  {`// wait for 5 milliseconds for keyboard to populate value in input
-if (this.props.element.type === 'text') {
-  setTimeout(() => {
-    this.switchTitle(this.props.element.value);
-  }, 5);
-}`}
-</CodeBlock>
+<Image src={keyboard} size="50%" />
 
 ---
 
-# Big one
+# Class Abuse Resistance Education
 
 <CodeBlock>
-  {`import React from 'react';
-import Keyboard from 'react-simple-keyboard';
-import { connect } from 'react-redux';
-import { remote } from 'electron';
-import { Dispatch } from 'redux';
-import scrollIntoView from 'scroll-into-view-if-needed';
-import { AppState } from '@/store';
-import { showKeyboard } from '@/store/Keyboard/actions';
-import 'react-simple-keyboard/build/css/index.css';
-import './Keyboard.scss';\n
-const keyboardLayout = {
-  default: [
-    '1 2 3 4 5 6 7 8 9 0 {bksp}',
-    '{tab} q w e r t y u i o p _',
-    '{lock} a s d f g h j k l /',
-    '{shift} z x c v b n m , . @',
-    '{kbdwn} {space}'
-  ],
-  shift: [
-    '1 2 3 4 5 6 7 8 9 0 {bksp}',
-    '{tab} ~ ! # \$ % ^ & \* ( ) _',
-    '{lock} \` " [ ] { } = + - /',
-    '{abc} | \\ < > ? ; : , . @',
-    '{kbdwn} {space}'
-  ],
-  lock: [
-    '1 2 3 4 5 6 7 8 9 0 {bksp}',
-    '{tab} Q W E R T Y U I O P _',
-    '{lock} A S D F G H J K L /',
-    '{shift} Z X C V B N M , . @',
-    '{kbdwn} {space}'
-  ],
-  number: [' 1 2 3', '{tab} 4 5 6', '{bksp} 7 8 9', '{kbdwn} 0']
-};\n
-const display = {
-  '{bksp}': 'delete',
-  '{shift}': '#+=',
-  '{abc}': 'abc',
-  '{kbdwn}': ' ',
-  '{tab}': 'tab',
-  '{rtab}': '&uarr;'
-};\n
-// Map keyboard events to https://electronjs.org/docs/api/accelerator
-const specialKeyMap = {
-  '{space}': ' ',
-  '{bksp}': 'Backspace',
-  '{tab}': 'Tab',
-  '{rtab}': 'shift+Tab'
-} as any;\n
-const buttonTheme = [
-  {
-    class: 'hide-keyboard-button',
-    buttons: '{kbdwn}'
-  }
-];\n
-interface AppKeyboardProps {
-  isActive: boolean;
-  form: string;
-  field: string;
-  element: HTMLInputElement;
-  showKeyboard: (show: boolean) => void;
-}\n
-interface AppKeyboardState {
-  layout: string;
-}
-class AppKeyboard extends React.Component<AppKeyboardProps, AppKeyboardState> {
-  state = { layout: 'lock' };
-  constructor(props: AppKeyboardProps) {
-    super(props);
-  }
-  componentDidUpdate = (prevProps: AppKeyboardProps) => {
+  {`class AppKeyboard extends Component<Props> {
+  state = { layout: 'lock' };\n
+  componentDidUpdate = (prevProps: Props) => {
     const { field, element, isActive } = this.props;
+    // if field has changed between renders and element isn't falsy
     if (prevProps.field !== field && element) {
       const { type, value } = element;
       let layout = 'default';
@@ -1069,64 +997,7 @@ class AppKeyboard extends React.Component<AppKeyboardProps, AppKeyboardState> {
         case 'text':
           this.switchTitle(value);
         default:
-        break;
-      }
-    }
-    if (isActive) {
-      scrollIntoView(element, {
-        scrollMode: 'if-needed',
-        block: 'start',
-        inline: 'start',
-        behavior: 'instant'
-      });
-    }
-  };\n
-  onKeyPress = (button: string) => {
-    const { layout } = this.state;
-    if (['{shift}', '{abc}'].includes(button)) {
-      this.setState({
-        layout: layout === 'shift' ? 'default' : 'shift'
-      });
-    } else if (button === '{lock}') {
-      this.setState({
-        layout: layout === 'lock' ? 'default' : 'lock'
-      });
-    } else if (button === '{kbdwn}') {
-      this.props.element.blur();
-    } else {
-      setImmediate(() => {
-        let window = remote.webContents.getFocusedWebContents();
-        if (window) {
-          if (specialKeyMap[button]) {
-            let modifiers = specialKeyMap[button].split('+');\n
-            window.sendInputEvent({
-              type: 'keyDown',
-              //@ts-ignore
-              keyCode: modifiers[modifiers.length - 1],
-              modifiers: modifiers.length > 1 ? [modifiers[0]] : undefined
-            });
-          }
-          if (button.length > 1 && !specialKeyMap[button]) {
-            for (var i = 0; i < button.length; i++) {
-              window.sendInputEvent({
-                type: 'char',
-                //@ts-ignore
-                keyCode: button[i]
-              });
-            }
-          } else {
-            window.sendInputEvent({
-              type: 'char',
-              //@ts-ignore
-              keyCode: specialKeyMap[button] ? specialKeyMap[button] : button
-            });
-          }
-        }
-      });\n
-      if (this.props.element.type === 'text') {
-        setTimeout(() => {
-          this.switchTitle(this.props.element.value);
-        }, 5); /// wait for 5 milliseconds for keyboard to populate value in input
+          break;
       }
     }
   };\n
@@ -1137,52 +1008,171 @@ class AppKeyboard extends React.Component<AppKeyboardProps, AppKeyboardState> {
     } else {
       this.setState({ layout: 'default' });
     }
+  }\n
+  onKeyPress = (button: string) => {
+    // ...Sending keystrokes and managing layout omitted...
+    // wait for 5 milliseconds for keyboard to populate value in input
+    if (this.props.element.type === 'text') {
+      setTimeout(() => {
+        this.switchTitle(this.props.element.value);
+      }, 5);
+    }
   };\n
   render() {
-    let keyboardClass = this.props.isActive ? 'active' : '';
-    if (this.state.layout === 'number') {
-      keyboardClass += ' number';
-    }
     return (
-    <div id="keyboard" className={keyboardClass}>
-      <Keyboard
-      layout={keyboardLayout}
-      layoutName={this.state.layout}
-      inputName={this.props.field}
-      onKeyPress={(button: string) => this.onKeyPress(button)}
-      display={display}
-      buttonTheme={{ buttonTheme }}
-      mergeDisplay={true}
-      preventMouseDownDefault={true}
-      tabCharOnTab={false}
-      />
-    </div>
+      <div id="keyboard">
+        <Keyboard
+          layout={keyboardLayout}
+          layoutName={this.state.layout}
+          inputName={this.props.field}
+          onKeyPress={(button: string) => this.onKeyPress(button)}
+          display={display}
+          buttonTheme={{ buttonTheme }}
+          mergeDisplay={true}
+          preventMouseDownDefault={true}
+          tabCharOnTab={false}
+        />
+      </div>
     );
   }
-}\n
-const mapStateToProps = ({ keyboard }: AppState) => ({
-isActive: keyboard.isActive,
-field: keyboard.field,
-form: keyboard.form,
-element: keyboard.element
-});\n
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-  showKeyboard: (show: boolean) => dispatch(showKeyboard(show))
-});
-\n
-export default connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(AppKeyboard);`}
+}`}
 </CodeBlock>
 
-<Notes>asd</Notes>
+<Notes>
+  cDU fired on each render, checks if field changed, changes layout of keyboard or manages title
+  case.
+</Notes>
+
+---
+
+# Class Abuse Resistance Education
+
+A lot can happen in five milliseconds
+
+<CodeBlock>
+  {`onKeyPress = (button: string) => {
+  // 'this' is mutable
+  if (this.props.element.type === 'text') {
+    setTimeout(() => {
+      // this.props.element.value is also mutable and
+      // subject to change at any time
+      this.switchTitle(this.props.element.value);
+    }, 5);
+  }
+};\n`}
+</CodeBlock>
+
+<Notes>Last keystroke and hit tab, switch title fires and goes from number back to text</Notes>
+
+---
+
+# Class Abuse Resistance Education
+
+<CodeBlock>
+{`const AppKeyboard: React.FC = () => {
+  // still managing layout in component state
+  const [layout, setLayout] = useState('lock');
+  // still pulling data from application (redux) state
+  const { isActive, field, element } = useSelector((s: AppState) => s.keyboard);\n
+  // omg it's a hook!
+  useEffect(() => {
+    if (element) {
+      const { type, value } = element;
+      let layout = 'default';
+      // decide layout for the input that has been focused.
+      switch (type) {
+        case 'tel':
+        case 'number':
+          layout = 'number';
+          setLayout(layout);
+          break;
+        case 'email':
+          setLayout(layout);
+          break;
+        case 'text':
+          switchTitle(value);
+        default:
+          break;
+      }
+    }
+  });\n
+  const switchTitle = (value: string) => {
+    // Set layout to lock to get upper case letter after a space.
+    if (value.endsWith(' ') || value === '') {
+      setLayout('lock');
+    } else {
+      setLayout('default');
+    }
+  };\n
+  const onKeyPress = (button: string) => {
+    // ...Sending keystrokes and managing layout omitted...
+  };
+  return (
+    <div id="keyboard">
+      <Keyboard
+        layout={keyboardLayout}
+        layoutName={layout}
+        inputName={field}
+        onKeyPress={(button: string) => onKeyPress(button)}
+        display={display}
+        buttonTheme={{ buttonTheme }}
+        mergeDisplay={true}
+        preventMouseDownDefault={true}
+        tabCharOnTab={false}
+      />
+    </div>
+  );
+};`}
+
+</CodeBlock>
+
+<Notes>
+  useEffect similar to componentDidMount, componentDidUpdate, and componentWillUnmount combined. No
+  need to think about timeouts in keypress. Allow component lifecycle to handle those parts.
+</Notes>
+
+---
+
+# The Special Sauce of `useEffect`
+
+<CodeBlock>{`useEffect(function, dependencies?)`}</CodeBlock>
+
+---
+
+# Special Sauce in Three Flavours
+
+<Horizontal>
+
+<CodeBlock>
+  {`// Run every render
+useEffect(() => {
+  console.log('every render');
+});
+`}
+</CodeBlock>
+
+<CodeBlock>
+  {`// Run on the first render
+useEffect(() => {
+  console.log('first render');
+},[]);
+`}
+</CodeBlock>
+
+<CodeBlock>
+  {`// Run on the first render
+// and when value changes
+useEffect(() => {
+  console.log('first render');
+},[value]);
+`}
+</CodeBlock>
+
+</Horizontal>
 
 ---
 
 # TODO
 
-1. Why not using classes & `this` is a great thing (PM example)
 2. colocated lifecycle logic
-3. Share logic with Hooks, comapre to clas
-   s
+3. Share logic with Hooks, comapre to class
