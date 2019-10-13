@@ -1039,8 +1039,8 @@ export const App: React.FC = () => {
 </CodeBlock>
 
 <Notes>
-  cDU fired on each render, checks if field changed, changes layout of keyboard or manages title
-  case.
+  cDU could be called what layout should the KB use. cDU fired on each render, checks if field
+  changed, changes layout of keyboard or manages title case.
 </Notes>
 
 ---
@@ -1062,7 +1062,10 @@ A lot can happen in five milliseconds
 };\n`}
 </CodeBlock>
 
-<Notes>Last keystroke and hit tab, switch title fires and goes from number back to text</Notes>
+<Notes>
+  Last keystroke and hit tab, switch title fires and goes from number back to text. Effectively a
+  race condition.
+</Notes>
 
 ---
 
@@ -1127,9 +1130,32 @@ A lot can happen in five milliseconds
 </CodeBlock>
 
 <Notes>
-  useEffect similar to componentDidMount, componentDidUpdate, and componentWillUnmount combined. No
-  need to think about timeouts in keypress. Allow component lifecycle to handle those parts.
+  No need to define a Props interface. useEffect similar to componentDidMount, componentDidUpdate,
+  and componentWillUnmount combined. No need to think about timeouts in keypress. Allow component
+  lifecycle to handle those parts.
 </Notes>
+
+---
+
+# Modern React is all About Hooks
+
+---
+
+# Hooks in a Nutshell
+
+<ul>
+  <Appear>
+    <li>useState - store local values</li>
+    <li>useEffect - run side effects within lifecycle</li>
+    <li>
+      useRef - maintain reference to <em>something</em>
+    </li>
+    <li>useMemo - memoize computations</li>
+    <li>useCallback - memoize functions</li>
+    <li>useReducer - for when useState isn't enough</li>
+    <li>useContext - consume React context</li>
+  </Appear>
+</ul>
 
 ---
 
@@ -1139,32 +1165,111 @@ A lot can happen in five milliseconds
 
 ---
 
-# Special Sauce in Three Flavours
+# When effects run
+
+<CodeBlock>
+  {`const App = () => {
+  // Runs every render as no
+  // dependencies were provided
+  useEffect(() => {
+    console.log('every render');
+  });\n
+  return (
+    <p>Every render</p>
+  );
+}
+`}
+</CodeBlock>
+
+<Notes>Uncommon, generally not to be used unless you have specific intent</Notes>
+
+---
+
+# When effects run
+
+<CodeBlock>
+  {`const App = () => {
+  // Run on first render only as
+  // dependencies array is empty
+  useEffect(() => {
+    document.title = 'Rendered';
+  }, []);\n
+  return (
+    <p>First render only</p>
+  );
+}
+`}
+</CodeBlock>
+
+---
+
+# When effects run
+
+<CodeBlock>
+  {`const App: React.FC<Props> = (props) => {
+  const { value } = props;
+  // Run on the first render
+  // and when 'value' changes
+  useEffect(() => {
+    console.log('Rendered', value);
+  }, [value]);\n
+  return (
+    <p>When {value} changes</p>
+  );
+}
+`}
+</CodeBlock>
+
+---
+
+# Cleaning Up
+
+<CodeBlock>
+  {`const App: React.FC<Props> = (props) => {
+  // setup a timer to run after one second
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('This will run after 1 second!')
+    }, 1000);
+    // return function called on unmount
+    return () => clearTimeout(timer);
+  }, []);\n
+  return (
+    <p>Cleaning up</p>
+  );
+}
+`}
+</CodeBlock>
+
+---
+
+# Colocating Lifecycle Logic
 
 <Horizontal>
 
 <CodeBlock>
-  {`// Run every render
-useEffect(() => {
-  console.log('every render');
-});
-`}
+  {`class App extends Component {
+  timer = undefined;\n
+  componentDidMount = () => {
+    this.timer = setTimeout(() => {
+      console.log('This will run after 1 second!')
+    }, 1000);
+  };\n
+  componentWillUnmount = () => {
+    clearTimeout(this.timer);
+  };\n
+}`}
 </CodeBlock>
 
 <CodeBlock>
-  {`// Run on the first render
-useEffect(() => {
-  console.log('first render');
-},[]);
-`}
-</CodeBlock>
-
-<CodeBlock>
-  {`// Run on the first render
-// and when value changes
-useEffect(() => {
-  console.log('first render');
-},[value]);
+  {`const App: React.FC<Props> = (props) => {\n
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('This will run after 1 second!')
+    }, 1000);\n
+    return () => clearTimeout(timer);
+  }, []);\n
+}
 `}
 </CodeBlock>
 
@@ -1172,7 +1277,186 @@ useEffect(() => {
 
 ---
 
+# Colocating Lifecycle Logic
+
+<CodeBlock>
+  {`class Example extends React.Component {
+  state = { count: 0 };
+  componentDidMount() {
+    document.title = \`You clicked $\{this.state.count\} times\`;
+  }\n
+  componentDidUpdate() {
+    document.title = \`You clicked $\{this.state.count\} times\`;
+  }\n
+  render() {
+    return (
+      <div>
+        <p>You clicked {this.state.count} times</p>
+        <button onClick={() => this.setState({ count: this.state.count + 1 })}>
+          Click me
+        </button>
+      </div>
+    );
+  }
+}`}
+</CodeBlock>
+
+---
+
+# Colocating Lifecycle Logic
+
+<CodeBlock>
+  {`const Example = () => {
+  const [count, setCount] = useState(0);\n
+  useEffect(() => {
+    document.title = \`You clicked $\{count\} times\`;
+  });\n
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}`}
+</CodeBlock>
+
+<Notes>About 45 minutes to here </Notes>
+
+---
+
+# Sharing Logic with Hooks
+
+---
+
+# The Problem
+
+I had three minimally different registration<br/>
+pages with five to six fields, two requiring validation.
+
+---
+
+# Sharing Logic with Hooks
+
+<CodeBlock>
+  {`// validation.ts
+export const validation = {
+  email,
+  password
+};
+function email(email:string) {
+  const emailRex = /\\S+@\\S+\\.\\S+/;
+  return emailRex.test(email);
+}
+function password(password:string) {
+  const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})/g;
+  return re.test(password);
+}
+`}
+</CodeBlock>
+
+---
+
+# Registration Example
+
+<CodeBlock>
+  {`class Registration extends Component<{}, State> {
+  state = { name: '', email: '', emailValid: undefined };\n
+  onChange = (e: FormEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget;
+    this.setState({ [name]: value });
+    if (name === 'email') {
+      const emailValid = validation.email(value);
+      this.setState({ emailValid });
+    }
+  };\n
+  onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };\n
+  render() {
+    const { name, email } = this.state;
+    return (
+      <form onSubmit={this.onSubmit}>
+        <input type="string" name="name" onChange={this.onChange} value={name} />
+        <input type="email" name="email" onChange={this.onChange} value={email} />
+      </form>
+    );
+  }
+}`}
+</CodeBlock>
+
+---
+
+# Registration as Function Component
+
+<CodeBlock>
+  {`const Registration: React.FC = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [valid, setValid] = useState<undefined | boolean>(undefined);\n
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };\n
+  return (
+    <form onSubmit={onSubmit}>
+      <input name="name" value={name} onChange={e => setName(e.currentTarget.value)} />
+      <input
+        name="email"
+        value={email}
+        onChange={e => {
+          const valid = validation.email(e.currentTarget.value);
+          setEmail(e.currentTarget.value);
+          setValid(valid);
+        }}
+      />
+    </form>
+  );
+};`}
+</CodeBlock>
+
+---
+
+# Custom Hook to the Rescue
+
+<CodeBlock>
+  {`export function useRegistration(): IUseRegistration {
+  const [name, setName] = useState('');
+  const [email, _setEmail] = useState('');
+  const [valid, setValid] = useState<undefined | boolean>(undefined);\n
+  const setEmail = (value: string) => {
+    const valid = validation.email(value);
+    _setEmail(value);
+    setValid(valid);
+  };\n
+  return { name, setName, valid, setEmail };
+}
+`}
+</CodeBlock>
+
+---
+
+# Putting Hooks to Work
+
+<CodeBlock>
+  {`const Registration: React.FC = () => {
+  const { name, setName, email, valid, setEmail } = useRegistration();\n
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };\n
+  return (
+    <form onSubmit={onSubmit}>
+      <input name="name" value={name} onChange={e => setName(e.currentTarget.value)} />
+      <input name="email" value={email} onChange={e => setEmail(e.currentTarget.value)} />
+    </form>
+  );
+};`}
+</CodeBlock>
+
+---
+
 # TODO
 
-2. colocated lifecycle logic
-3. Share logic with Hooks, comapre to class
+1. Conditional rendering opinons
+2. FC gotchas
+3. Order content in best way
