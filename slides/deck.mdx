@@ -75,7 +75,7 @@ export const theme = {
 
 <DeclaringComponents />
 
-<Notes>Class component, it's just inheritance and implementation</Notes>
+<Notes>Class component, it's just inheritance and implementation. Only need render</Notes>
 
 ---
 
@@ -188,6 +188,11 @@ const AirlineFood: React.FC<Props> = props => {
 
 </CodeBlock>
 
+<Notes>
+  It's reasonably to think about component lifecycle in the same way you think about tests, setup,
+  the workload, and teardown or cleanup.
+</Notes>
+
 ---
 
 ## Use what you need
@@ -197,14 +202,13 @@ const AirlineFood: React.FC<Props> = props => {
 
 <CodeBlock>
   {`class AirlineFood extends Component<Props, State> {
-  // never do this
   constructor(props: Props) {
     super(props);
     this.state = { open: false };
     this.getFood = this.getFood.bind(this);
   }
-  // state can be declared like so
-  state = { open: false };
+  // state can be declared like so, outside ctor
+  // state = { open: false };
   // if you declared this as \`getFood = () => {}\`
   // it's automatically bound
   getFood() {
@@ -248,8 +252,8 @@ const AirlineFood: React.FC<Props> = props => {
 # Functional-ish React
 
 - This is how you write idiomatic React
-- Important with React e.g.: new state, explicit side effects
-- Important with Redux e.g.: only returning new state, debugging
+- React e.g.: only create new state, explicit side effects
+- Redux e.g.: only create new state, debugging
 - Potentially representative in labour-market skill shift
 - A lot of new developers will unknowingly learn functional programming concepts this way
 
