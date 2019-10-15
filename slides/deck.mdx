@@ -3,7 +3,7 @@ import withHocSc from '../static/with-hoc-sc.png';
 import noHocSc from '../static/no-hocs-sc.png';
 import projectStructure from '../static/project-structure.png';
 import keyboard from '../static/keyboard.png';
-import { DeclaringComponents, CodeBlock, Care } from './components';
+import { DeclaringComponents, CodeBlock, Care, Lifecycle } from './components';
 
 export const theme = {
   colors: {
@@ -123,6 +123,8 @@ const AirlineFood: React.FC<Props> = props => {
 
 # Component Lifecycle
 
+<Lifecycle />
+
 <Notes>The order in which things happen</Notes>
 
 ---
@@ -135,7 +137,6 @@ const AirlineFood: React.FC<Props> = props => {
   constructor(props: Props) {
     super(props);
   }
-  static getDerivedStateFromProps = (props: Props, state: State) => {};
   componentDidMount = () => {};
   render() {
     return (
@@ -1345,7 +1346,35 @@ A lot can happen in five milliseconds
 }`}
 </CodeBlock>
 
-<Notes>About 45 minutes to here </Notes>
+<Notes>About 45 minutes to here</Notes>
+
+---
+
+# One Function Component Gotcha
+
+---
+
+# One Function Component Gotcha
+
+<CodeBlock>
+  {`const VideoChat = () => {
+  const [username, setUsername] = useState('');
+  const [roomName, setRoomName] = useState('');
+  const [token, setToken] = useState(null);\n
+  const handleUsernameChange = useCallback(event => {
+    setUsername(event.target.value);
+  }, []);\n
+  const handleRoomNameChange = useCallback(event => {
+    setRoomName(event.target.value);
+  }, []);\n
+  return <div></div> // we'll build up our response later
+};`}
+</CodeBlock>
+
+<Notes>
+  New render means functions are redefined, sometimes that's undesirable, wrap your func in
+  useCallback. Thanks Twilio
+</Notes>
 
 ---
 
@@ -1478,10 +1507,18 @@ function password(password:string) {
 
 ---
 
-# TODO
+# In Summary
 
-0. TOC?
-1. Conditional rendering opinons
-1. FC gotchas
-1. Order content in best way
-1. summary?
+- Understand the component lifecycle
+- Write Functional Programming style code
+- Use tools like `create-react-app` to spare brain power
+- Create conventional and consistent component APIs
+- Write semantic HTML and use Fragments
+- ABD
+- Decompose components when it makes sense
+- Prefer function components and hooks over classes and HOCs
+- Write custom hooks to prevent repeating logic
+
+---
+
+# End
