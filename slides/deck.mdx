@@ -783,6 +783,26 @@ export const App: React.FC = () => {
 
 ---
 
+# Semantic HTML is probably your gateway to accessibility
+
+<CodeBlock>
+  {`const Input: React.FC<Props> = ({ type, value, labelText, onChange, required }) => {
+  return (
+    <input
+      type={type}
+      aria-label={labelText}
+      aria-required="true"
+      onChange={e => onChange(e.target.value)}
+      value={value}
+      name="name"
+      required={required}
+    />
+  );
+};`}
+</CodeBlock>
+
+---
+
 # Use Fragments, not extraneous divs
 
 ---
@@ -1460,6 +1480,8 @@ function password(password:string) {
 
 # TODO
 
+0. TOC?
 1. Conditional rendering opinons
-2. FC gotchas
-3. Order content in best way
+1. FC gotchas
+1. Order content in best way
+1. summary?
