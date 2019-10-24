@@ -4,56 +4,9 @@ import noHocSc from '../static/no-hocs-sc.png';
 import projectStructure from '../static/project-structure.png';
 import keyboard from '../static/keyboard.png';
 import { DeclaringComponents, CodeBlock, Care, Lifecycle } from './components';
+import { theme as _theme } from './theme';
 
-export const theme = {
-  colors: {
-    text: '#fff',
-    background: '#130a3e',
-    primary: '#08f',
-    secondary: '#f0f',
-    darkgray: '#333'
-  },
-  styles: {
-    li: {
-      marginBottom: '2rem'
-    }
-  }
-};
-
-# Writing Modern <br /> & Opinionated React
-
-<Notes>Modern as of now, maybe not in a year</Notes>
-
----
-
-# React is unopinionated, so we need to be
-
-<Appear>
-  <div>
-    <CodeBlock>
-      {`return (
-  <div>
-    <p>Some kind of content</p>
-  </div>
-);
-`}
-    </CodeBlock>
-  </div>
-</Appear>
-
-<Notes>
-  React has a few rules, but those aside as long as your component returns JSX it is happy days
-</Notes>
-
----
-
-# Guiding Principles
-
-1. Spend your decision capital wisely
-2. Be cognizant of your team's decision capital
-3. Apply conventions, known or inferred
-4. Generally choose safe over exiting
-5. Stay with, not necessarily ahead of, the curve
+export const theme = _theme;
 
 ---
 
