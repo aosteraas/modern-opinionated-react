@@ -1,0 +1,673 @@
+import { Image, Notes, Appear, Split, Horizontal } from 'mdx-deck';
+import { DeclaringComponents, CodeBlock, Lifecycle } from './components';
+import { theme as _theme } from './theme';
+import withHocSc from '../static/with-hoc-sc.png';
+import noHocSc from '../static/no-hocs-sc.png';
+import projectStructure from '../static/project-structure.png';
+
+export const theme = _theme;
+
+# Modern & Opinionated React
+
+---
+
+# Always use create-react-app
+
+### Unless you have a damn good reason not to
+
+---
+
+# create-react-app
+
+- Easy to use: `npx create-react-app modern-react --typescript`
+- Sensible defaults:
+  - Linting
+  - Minification
+  - Webpack and babel config, modern JS
+  - Test runner
+  - CSS & SCSS support, autoprefixing
+  - Static asset imports
+- Battle tested and proven
+- You can always `eject`
+
+---
+
+# Avoid Higher Order Components
+
+### Where practical.
+
+---
+
+# Avoid HOCs
+
+### They are _not fun_ to type
+
+<div style={{overflow:'auto'}}>
+
+<CodeBlock customStyle={{overflow:'unset'}}>
+  {`// props for our HOC
+export interface WithThemeProps {
+  primaryColor: string;
+}
+// Props for our actual component
+export interface Props extends WithThemeProps {
+  children: React.ReactNode;
+}
+// the HOC itself
+export function withTheme<T extends WithThemeProps = WithThemeProps>(
+  WrappedComponent: React.ComponentType<T>
+) {
+  // render wrapped component
+  return class ComponentWithTheme extends React.Component<T, WithThemeProps> {
+    // a method to get the theme
+    getThemeProps = () => {};
+    render() {
+      // Fetch props to inject
+      const themeProps = this.getThemeProps();
+      // apply the necessary props
+      return <WrappedComponent {...themeProps} {...(this.props as T)} />;
+    }
+  };
+}`}
+</CodeBlock>
+<CodeBlock>
+{`export class MyButton extends React.Component<Props> {
+  // The theme values are also available as props here.
+  internalMethod = () => {
+    const color = this.props.primaryColor;
+  };
+  render() {
+    return <button>submit</button>;
+  }
+}
+`}
+</CodeBlock>
+
+</div>
+
+---
+
+<Image src={withHocSc} />
+
+---
+
+<Image src={noHocSc} />
+
+---
+
+# Function Components<br/>over Class Components
+
+### Also where practical which is 99% of the time
+
+---
+
+# Functions over Classes
+
+- Easier for humans and computers to understand
+- No use of `this` (a semi big deal; reasons to come)
+- Colocated lifecycle functionality
+- _Way_ easier to share logic
+- The most common component in contemporary React
+
+---
+
+# Functions over Classes
+
+### Simpler Declarations
+
+<div style={{display:`flex`}}>
+<CodeBlock>
+  {`const FnComp = () => {
+  return (
+    <div>
+      <p>content</p>
+    </div>
+  );
+};
+`}
+</CodeBlock>
+
+<CodeBlock>
+  {`class ClassComp extends React.Component {
+  render() {
+    return (
+      <div>
+        <p>content</p>
+      </div>
+    );
+  }
+}`}
+</CodeBlock>
+
+</div>
+
+<Notes>A new render means a new component</Notes>
+
+---
+
+# Pick a style and stick to it
+
+---
+
+# Pick a style and stick to it
+
+<div style={{display:`flex`}}>
+<div style={{display:`flex`, flexDirection: 'column'}}>
+<h2 style={{textAlign:'center'}}>Do This</h2>
+
+<CodeBlock>
+  {`const MyComponent: React.FC = () => {
+  const handleClick = (e: MouseEvent) => {
+    // do something
+  };
+  return (
+    <div>
+      <p>things</p>
+    </div>
+  );
+};
+`}
+</CodeBlock>
+</div>
+<div style={{display:`flex`, flexDirection: 'column'}}>
+<h2 style={{textAlign:'center'}}>Or This</h2>
+<CodeBlock>
+  {`const MyComponent: React.FC = () => {
+  function handleClick(e: MouseEvent) {
+    // do something
+  }
+  return (
+    <div>
+      <p>things</p>
+    </div>
+  );
+};`}
+</CodeBlock>
+
+</div>
+</div>
+
+---
+
+# Pick a style and stick to it
+
+## Just don't do this
+
+<CodeBlock>
+  {`class BadForm extends React.Component {
+  componentDidMount() {
+    //
+  }
+  handleClick = () => {
+    //
+  };
+}`}
+</CodeBlock>
+
+---
+
+# ABD
+
+### Always be Destructuring
+
+---
+
+# ABD
+
+<div style={{display:`flex`}}>
+<div style={{display:`flex`, flexDirection: 'column'}}>
+<h2 style={{textAlign:'center'}}>Do This</h2>
+
+<CodeBlock>
+  {`const ABD: React.FC<Props> = ({
+    msg,
+    data,
+    nest
+  }) => {
+  const { anotherOne } = nest;
+  return (
+    <div>
+      <p>
+        {msg} - {anotherOne}
+      </p>
+      {data.map((d, idx) => (
+        <span key={idx}>{d}</span>
+      ))}
+    </div>
+  );
+};
+`}
+</CodeBlock>
+
+</div>
+
+<div style={{display:`flex`, flexDirection: 'column'}}>
+
+<h2 style={{textAlign:'center'}}>Not This</h2>
+
+<CodeBlock >
+  {`class NoDesctruct extends React.Component<Props> {
+  render() {
+    // const { msg, data, nest } = this.props;
+    return (
+      <div>
+        <p>
+          {this.props.msg} - {this.props.nest.anotherOne}
+        </p>
+        {this.props.data.map((d, idx) => (
+          <span key={idx}>{d}</span>
+        ))}
+      </div>
+    );
+  }
+}
+`}
+
+</CodeBlock>
+
+</div>
+</div>
+
+---
+
+# ABD
+
+Rename as the need arises or it makes sense.
+
+<CodeBlock>{` const { poorlyNamedItem: data } = props.meta; `}</CodeBlock>
+
+---
+
+# Create conventional component APIs
+
+### No exceptions.
+
+---
+
+# Component APIs
+
+<div style={{ overflow: 'auto' }}>
+  <CodeBlock customStyle={{ overflow: 'unset' }}>
+    {`const App = () => {
+  const [name, setName] = useState('');\n
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+  };\n
+  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };\n
+  return (
+    <div>
+      <SimpleForm handleChange={handleChange} handleSubmit={handleSubmit} />
+    </div>
+  );
+};`}
+</CodeBlock>
+
+<CodeBlock customStyle={{ overflow: 'unset' }}>
+  {`const SimpleForm: React.FC<GoodProps> = ({ handleSubmit, handleChange }) => {
+  return (
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="name">Name</label>
+      <input onChange={handleChange} type="text" name="name" />
+    </form>
+  );
+};`}
+</CodeBlock>
+
+</div>
+
+<Notes>Name props and whatever those are identically and keep them consistent.</Notes>
+
+---
+
+# Component APIs
+
+<div style={{ overflow: 'auto' }}>
+
+<CodeBlock customStyle={{ overflow: 'unset' }}>
+  {`
+interface GoodProps {
+  handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  handleSubmit: (e: FormEvent<HTMLFormElement>) => void;
+  // onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+}`}
+</CodeBlock>
+
+<CodeBlock customStyle={{ overflow: 'unset' }}>
+    {`interface BadProps {
+  keyboardCallback: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  formSubmission: (e: React.FormEvent) => void;
+}`}
+</CodeBlock>
+</div>
+
+---
+
+# Don't make me think
+
+<CodeBlock>
+{`<IncorrectBarcodeModal
+  closeModalHandler={() =>
+    this.setState({ showIncorrectBarcodeModal: false })
+  }
+/>
+
+<ModalWrapper
+  onCloseHandler={() => {
+    setModalVisibility(false);
+  }}
+/>
+
+<ConfirmAndProceedBox
+  marketingOffersCallback={checked =>
+    this.props.marketingOffersChanged(checked)
+  }
+  termsAndConditionsCallback={checked =>
+    this.props.termsAndConditionsChanged(checked)
+  }
+ />`}
+</CodeBlock>
+
+---
+
+# Project Structure
+
+### There are no rules but also there are
+
+---
+
+# Project Structure
+
+<Image src={projectStructure} size="contain" />
+
+<Notes>Components can be grouped by domain, page, category, whatever</Notes>
+
+---
+
+# Art Vandelay
+
+### Care about importing and exporting
+
+---
+
+# Art Vandelay
+
+<CodeBlock>
+  {`import React from 'react';
+import Button from '../ArtVandelay/Button';
+import Card from '../ArtVandelay/Card';
+import Table from '../ArtVandelay/Table';\n
+export const App: React.FC = () => {
+  return (
+    <div>
+      <Button disabled={false} type="button" />
+      <Card title="My Card" />
+      <Table />
+    </div>
+  );
+};`}
+</CodeBlock>
+
+---
+
+<CodeBlock>
+  {`// index.ts
+export * from './Button';
+export * from './Card';
+export * from './Table';\n
+// App.tsx
+import React from 'react';
+import { Button, Card, Table } from '../ArtVandelay';\n
+export const App: React.FC = () => {
+  return (
+    <>
+      <Button disabled={false} type="button" />
+      <Card title="My Card" />
+      <Table />
+    </>
+  );
+};
+`}
+</CodeBlock>
+
+---
+
+# Write Semantic HTML
+
+### It exists to convey meaning so you should allow it
+
+---
+
+# Write Semantic HTML
+
+<CodeBlock>
+  {`export const Bad = () => {
+  return (
+    <div className="main">
+      <div className="header">Cool Page</div>
+      <div className="main">
+        <div className="title">Cool Content</div>
+        <div className="content">
+          <p>How's about that sports game</p>
+        </div>
+      </div>
+    </div>
+  );
+};`}
+</CodeBlock>
+
+---
+
+# Write Semantic HTML
+
+<CodeBlock>
+  {`export const Good = () => {
+  return (
+    <main>
+      <header>Cool Page</header>
+      <article>
+        <h1>Cool Content</h1>
+        <section>
+          <p>How's about that sports game</p>
+        </section>
+      </article>
+    </main>
+  );
+};`}
+</CodeBlock>
+
+---
+
+# Semantic HTML is probably your gateway to accessibility
+
+<CodeBlock>
+  {`const Input: React.FC<Props> = ({ type, value, labelText, onChange, required }) => {
+  return (
+    <input
+      type={type}
+      aria-label={labelText}
+      aria-required="true"
+      onChange={e => onChange(e.target.value)}
+      value={value}
+      name="name"
+      required={required}
+    />
+  );
+};`}
+</CodeBlock>
+
+---
+
+# Use Fragments, not extraneous divs
+
+---
+
+# Use Fragments, not extraneous divs
+
+<CodeBlock>
+  {`const AngryReact = () => {
+  return (
+      <p>Some kind of content</p>
+      <p>Another kind of content</p>
+  );
+}`}
+</CodeBlock>
+
+<Notes>JSX needs strictly one parent</Notes>
+
+---
+
+# Use Fragments, not extraneous divs
+
+<CodeBlock>
+  {`const NoFragments = () => {
+  return (
+    <div>
+      <p>Some kind of content</p>
+      <p>Another kind of content</p>
+    </div>
+  );
+};`}
+</CodeBlock>
+
+---
+
+# How good are Fragments?
+
+<Horizontal>
+
+<CodeBlock customStyle={{ paddingLeft: 0, paddingRight: 0, fontSize: `50px` }}>
+  {`const Fragments = () => {
+  return (
+    <React.Fragment>
+      <p>Some kind of content</p>
+      <p>Another kind of content</p>
+    </React.Fragment>
+  );
+};`}
+</CodeBlock>
+
+<CodeBlock customStyle={{ paddingLeft: 0, paddingRight: 0, fontSize: `50px` }}>
+  {`const Fragments = () => {
+  return (
+    <Fragment>
+      <p>Some kind of content</p>
+      <p>Another kind of content</p>
+    </Fragment>
+  );
+};`}
+</CodeBlock>
+
+<CodeBlock customStyle={{ paddingLeft: 0, paddingRight: 0, fontSize: `50px` }}>
+  {`const Fragments = () => {
+  return (
+    <>
+      <p>Some kind of content</p>
+      <p>Another kind of content</p>
+    </>
+  );
+};`}
+</CodeBlock>
+
+</Horizontal>
+
+---
+
+# Decomposing JSX into Components
+
+### Make components when it makes sense
+
+---
+
+# Decomposing JSX into Components
+
+<CodeBlock>
+  {`const App = () => {
+  const items = getItems();
+  const comments = getComments();
+  return (
+    <main>
+      <header>My Cool Page</header>
+      <section>
+        {items.map((item, index) => (
+          <article key={index}>
+            <h2>{item.title}</h2>
+            <p>{item.body}</p>
+          </article>
+        ))}
+      </section>
+      <section>
+        {comments.map((cmt, index) => (
+          <article key={index}>
+            <p>{cmt.comment}</p>
+            <small>By {cmt.author}</small>
+          </article>
+        ))}
+      </section>
+    </main>
+  );
+};`}
+</CodeBlock>
+
+---
+
+# Decomposing into Components
+
+<Horizontal>
+
+<CodeBlock customStyle={{ fontSize: `50px` }}>
+  {`const Items: React.FC<ItemProps> = ({
+  items
+}) => {
+  return (
+    <section>
+      {items.map((item, index) => (
+        <article key={index}>
+          <h2>{item.title}</h2>
+          <p>{item.body}</p>
+        </article>
+      ))}
+    </section>
+  );
+};`}
+</CodeBlock>
+
+<CodeBlock customStyle={{ fontSize: `50px` }}>
+  {`const Comments: React.FC<CommentProps> = ({
+  comments
+}) => {
+  return (
+    <section>
+      {comments.map((cmt, index) => (
+        <article key={index}>
+          <p>{cmt.comment}</p>
+          <small>By {cmt.author}</small>
+        </article>
+      ))}
+    </section>
+  );
+};`}
+</CodeBlock>
+
+</Horizontal>
+
+---
+
+# Decomposing into Components
+
+<CodeBlock>
+  {`const App = () => {
+  const items: Item[] = getItems();
+  const comments: Comment[] = getComments();
+  return (
+    <main>
+      <header>My Cool Page</header>
+      <Items items={items} />
+      <Comments comments={comments} />
+    </main>
+  );
+};`}
+</CodeBlock>
+
+<Notes>Est 35 minutes to this point</Notes>

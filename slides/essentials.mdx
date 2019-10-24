@@ -1,0 +1,241 @@
+import { Image, Notes, Appear, Split, Horizontal } from 'mdx-deck';
+import { DeclaringComponents, CodeBlock, Lifecycle } from './components';
+import { theme as _theme } from './theme';
+
+export const theme = _theme;
+
+# React Essentials
+
+---
+
+# Declaring Components
+
+---
+
+# Class Components
+
+<DeclaringComponents />
+
+<Notes>Class component, it's just inheritance and implementation. Only need render</Notes>
+
+---
+
+# Function Components
+
+<CodeBlock>
+  {`const AirlineFood: React.FC<Props> = props => {
+  return (
+    <div>
+      {props.text}
+      <p>What's the deal with airline food?</p>
+    </div>
+  );
+};
+`}
+</CodeBlock>
+
+<Notes>Nothing to implement, just return valid jsx</Notes>
+
+---
+
+# Function Components with State
+
+<CodeBlock>
+  {`const AirlineFood: React.FC<Props> = props => {
+  const [open, setIsOpen] = useState(false);
+  return (
+    <div>
+      {props.text}
+      <p>What's the deal with airline food?</p>
+    </div>
+  );
+};
+`}
+</CodeBlock>
+
+<Notes>useState uses array destructuing, like a tuple in C#</Notes>
+
+---
+
+# TODO Props & State
+
+---
+
+# Component Lifecycle
+
+<Lifecycle />
+
+<Notes>The order in which things happen</Notes>
+
+---
+
+# Mounting
+
+<CodeBlock>
+  {`class AirlineFood extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+  }
+  componentDidMount = () => {};
+  render() {
+    return (
+      <div>
+        {this.props.text}
+      </div>
+    );
+  }
+}
+`}
+</CodeBlock>
+
+---
+
+# Updating
+
+<CodeBlock>
+  {`class AirlineFood extends Component<Props, State> {
+  componentDidUpdate = (prevProps: Props, prevState: State) => {};\n
+  render() {
+    return (
+      <div>
+        {this.props.text}
+      </div>
+    );
+  }
+}
+`}
+
+</CodeBlock>
+
+---
+
+# Unmounting
+
+<CodeBlock>
+  {`class AirlineFood extends Component<Props, State> {
+  componentWillUnmount = () => {};
+}
+`}
+
+</CodeBlock>
+
+<Notes>
+  It's reasonably to think about component lifecycle in the same way you think about tests, setup,
+  the workload, and teardown or cleanup.
+</Notes>
+
+---
+
+# Use what you need
+
+- You (probably) never need a constructor
+- Most work handled in `componentDidMount` and `componentDidUpdate`
+
+<CodeBlock>
+  {`class AirlineFood extends Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = { open: false };
+    this.getFood = this.getFood.bind(this);
+  }
+  // state can be declared like so, outside ctor
+  // state = { open: false };
+  // if you declared this as \`getFood = () => {}\`
+  // it's automatically bound
+  getFood() {
+  }
+}
+`}
+
+</CodeBlock>
+
+---
+
+# React is Functional-ish
+
+- No mutation\*
+- Explicit side-effects
+- A whole lot of new copies of data
+
+\*Excludes component state in class components.
+
+---
+
+# React is Functional-ish
+
+<CodeBlock>
+  {`const AirlineFood: React.FC<Props> = props => {
+  const [open, setIsOpen] = useState(false);
+  return (
+    <div>
+      {props.data.map((d, idx) => (
+        <p key={idx}>{d}</p>
+      ))}
+    </div>
+  );
+};
+`}
+
+</CodeBlock>
+
+---
+
+# Functional-ish React
+
+- This is how you write idiomatic React
+- React e.g.: only create new state, explicit side effects
+- Redux e.g.: only create new state, debugging
+- Potentially representative in labour-market skill shift
+- A lot of new developers will unknowingly learn functional programming concepts this way
+
+---
+
+## Functional-ish React
+
+Common among Functional Programming languages is pattern matching. This is the current
+proposal in stage 1 for JS.
+
+<CodeBlock>
+  {`const res = await fetch(jsonService)
+case (res) {
+  when {status: 200, headers: {'Content-Length': s}} ->
+    console.log(\`size is \${s}\`),
+  when {status: 404} ->
+    console.log('JSON not found'),
+  when {status} if (status >= 400) -> {
+    throw new RequestError(res)
+  },
+}`}
+</CodeBlock>
+
+<Notes>
+  JS has been through a few years of rapid change and improvement, and in the JS world new features,
+  syntaxes, etc, become commonly used faster than in other languages/ecosystems
+</Notes>
+
+---
+
+## Functional-ish React
+
+And it's _quite_ similar to pattern matching in Elixir
+
+<CodeBlock language="elixir">
+  {`defmodule Server.FileHandler do
+  def handle_file({:ok, content}, conv) do
+    %{conv | status: 200, resp_body: content}
+  end
+#
+  def handle_file({:error, :enoent}, conv) do
+    %{conv | status: 404, resp_body: "File not found!"}
+  end
+#
+  def handle_file({:error, reason}, conv) do
+    %{conv | status: 500, resp_body: "File error: #{reason}"}
+  end
+end`}
+</CodeBlock>
+
+<Notes>
+  Similar to method overloading but you don't check object internals first and if/else it you just
+  call the method with the object and let the runtime figure it out
+</Notes>
