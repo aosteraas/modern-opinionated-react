@@ -13,7 +13,8 @@ export const theme = _theme;
 <ul>
   <Appear>
     <li>useState - store local values</li>
-    <li>useEffect - run side effects within lifecycle</li>
+    <li>useEffect - run side effects post-render within lifecycle</li>
+    <li>useLayoutEffect - as above but can block browser paint</li>
     <li>
       useRef - maintain reference to <em>something</em>
     </li>
@@ -112,8 +113,6 @@ export const theme = _theme;
 
 # Colocating Lifecycle Logic
 
-<Horizontal>
-
 <CodeBlock>
   {`class App extends Component {
   timer = undefined;\n
@@ -128,6 +127,10 @@ export const theme = _theme;
 }`}
 </CodeBlock>
 
+---
+
+# Colocating Lifecycle Logic
+
 <CodeBlock>
   {`const App: React.FC<Props> = (props) => {\n
   useEffect(() => {
@@ -139,8 +142,6 @@ export const theme = _theme;
 }
 `}
 </CodeBlock>
-
-</Horizontal>
 
 ---
 
@@ -341,8 +342,16 @@ function password(password:string) {
   };\n
   return (
     <form onSubmit={onSubmit}>
-      <input name="name" value={name} onChange={e => setName(e.currentTarget.value)} />
-      <input name="email" value={email} onChange={e => setEmail(e.currentTarget.value)} />
+      <input
+        name="name"
+        value={name}
+        onChange={e => setName(e.currentTarget.value)}
+      />
+      <input
+        name="email"
+        value={email}
+        onChange={e => setEmail(e.currentTarget.value)}
+      />
     </form>
   );
 };`}
