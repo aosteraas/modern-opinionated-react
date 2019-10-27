@@ -214,38 +214,7 @@ export function withTheme<T extends WithThemeProps = WithThemeProps>(
 
 # ABD
 
-<div style={{display:`flex`}}>
-<div style={{display:`flex`, flexDirection: 'column'}}>
-<h2 style={{textAlign:'center'}}>Do This</h2>
-
 <CodeBlock>
-  {`const ABD: React.FC<Props> = ({
-    msg,
-    data,
-    nest
-  }) => {
-  const { anotherOne } = nest;
-  return (
-    <div>
-      <p>
-        {msg} - {anotherOne}
-      </p>
-      {data.map((d, idx) => (
-        <span key={idx}>{d}</span>
-      ))}
-    </div>
-  );
-};
-`}
-</CodeBlock>
-
-</div>
-
-<div style={{display:`flex`, flexDirection: 'column'}}>
-
-<h2 style={{textAlign:'center'}}>Not This</h2>
-
-<CodeBlock >
   {`class NoDesctruct extends React.Component<Props> {
   render() {
     // const { msg, data, nest } = this.props;
@@ -265,8 +234,26 @@ export function withTheme<T extends WithThemeProps = WithThemeProps>(
 
 </CodeBlock>
 
-</div>
-</div>
+---
+
+# ABD
+
+<CodeBlock customStyle={{ fontSize: `2.5rem` }}>
+  {`const ABD: React.FC<Props> = ({ msg, data, nest }) => {
+  const { anotherOne } = nest;
+  return (
+    <div>
+      <p>
+        {msg} - {anotherOne}
+      </p>
+      {data.map((d, idx) => (
+        <span key={idx}>{d}</span>
+      ))}
+    </div>
+  );
+};
+`}
+</CodeBlock>
 
 ---
 
@@ -287,8 +274,20 @@ Rename as the need arises or it makes sense.
 # Component APIs
 
 <div style={{ overflow: 'auto' }}>
-  <CodeBlock customStyle={{ overflow: 'unset' }}>
-    {`const App = () => {
+
+<CodeBlock customStyle={{ overflow: 'unset' }}>
+  {`const SimpleForm: React.FC<GoodProps> = ({ handleSubmit, handleChange }) => {
+  return (
+    <form onSubmit={handleSubmit}>
+      <label htmlFor="name">Name</label>
+      <input onChange={handleChange} type="text" name="name" />
+    </form>
+  );
+};`}
+</CodeBlock>
+
+<CodeBlock customStyle={{ overflow: 'unset' }}>
+  {`const App = () => {
   const [name, setName] = useState('');\n
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -300,17 +299,6 @@ Rename as the need arises or it makes sense.
     <div>
       <SimpleForm handleChange={handleChange} handleSubmit={handleSubmit} />
     </div>
-  );
-};`}
-</CodeBlock>
-
-<CodeBlock customStyle={{ overflow: 'unset' }}>
-  {`const SimpleForm: React.FC<GoodProps> = ({ handleSubmit, handleChange }) => {
-  return (
-    <form onSubmit={handleSubmit}>
-      <label htmlFor="name">Name</label>
-      <input onChange={handleChange} type="text" name="name" />
-    </form>
   );
 };`}
 </CodeBlock>
@@ -535,9 +523,7 @@ export const App: React.FC = () => {
 
 # How good are Fragments?
 
-<Horizontal>
-
-<CodeBlock customStyle={{ paddingLeft: 0, paddingRight: 0, fontSize: `50px` }}>
+<CodeBlock customStyle>
   {`const Fragments = () => {
   return (
     <React.Fragment>
@@ -548,7 +534,11 @@ export const App: React.FC = () => {
 };`}
 </CodeBlock>
 
-<CodeBlock customStyle={{ paddingLeft: 0, paddingRight: 0, fontSize: `50px` }}>
+---
+
+# How good are Fragments?
+
+<CodeBlock customStyle>
   {`const Fragments = () => {
   return (
     <Fragment>
@@ -559,7 +549,11 @@ export const App: React.FC = () => {
 };`}
 </CodeBlock>
 
-<CodeBlock customStyle={{ paddingLeft: 0, paddingRight: 0, fontSize: `50px` }}>
+---
+
+# How good are Fragments?
+
+<CodeBlock customStyle>
   {`const Fragments = () => {
   return (
     <>
@@ -569,8 +563,6 @@ export const App: React.FC = () => {
   );
 };`}
 </CodeBlock>
-
-</Horizontal>
 
 ---
 

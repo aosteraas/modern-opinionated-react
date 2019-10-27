@@ -57,7 +57,25 @@ export const theme = _theme;
 
 ---
 
-# TODO Props & State
+# Props & State
+
+Props are passed from a parent to a child component and are immutable. <br/>State is managed by a component and can be changed, and it's value is maintained between renders.
+
+<CodeBlock>
+  {`const AirlineFood: React.FC<Props> = props => {
+  const [open, setIsOpen] = useState(false);
+  return (
+    <div>
+      {props.text}
+      <p>What's the deal with airline food?</p>
+      <button onClick={() => setIsOpen(!open)}>
+        {open ? 'Open' : 'Closed'}
+      </button>
+    </div>
+  );
+};
+`}
+</CodeBlock>
 
 ---
 
@@ -65,7 +83,7 @@ export const theme = _theme;
 
 <Lifecycle />
 
-<Notes>The order in which things happen</Notes>
+<Notes>The order in which things happen. Only covering most important lifecycle methods</Notes>
 
 ---
 
@@ -192,7 +210,7 @@ export const theme = _theme;
 
 ## Functional-ish React
 
-Common among Functional Programming languages is pattern matching. This is the current
+Common among Functional Programming languages is pattern matching.<br/>This is the current
 proposal in stage 1 for JS.
 
 <CodeBlock>
@@ -239,3 +257,24 @@ end`}
   Similar to method overloading but you don't check object internals first and if/else it you just
   call the method with the object and let the runtime figure it out
 </Notes>
+
+---
+
+## Functional-ish React
+
+<CodeBlock>
+  {`function doubleSay (str) {
+  return str + ", " + str;
+}
+function capitalize (str) {
+  return str[0].toUpperCase() + str.substring(1);
+}
+function exclaim (str) {
+  return str + '!';
+}\n
+let result = "hello"
+  |> doubleSay
+  |> capitalize
+  |> exclaim;\n
+result //=> "Hello, hello!"`}
+</CodeBlock>
