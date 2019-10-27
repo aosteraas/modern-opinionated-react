@@ -1,0 +1,367 @@
+import { Image, Notes, Appear, Split, Horizontal } from 'mdx-deck';
+import { DeclaringComponents, CodeBlock, Care, Lifecycle } from './components';
+import { theme as _theme } from './theme';
+
+export const theme = _theme;
+
+# Modern React is all About Hooks
+
+---
+
+# Hooks in a Nutshell
+
+<ul>
+  <Appear>
+    <li>useState - store local values</li>
+    <li>useEffect - run side effects within lifecycle</li>
+    <li>
+      useRef - maintain reference to <em>something</em>
+    </li>
+    <li>useMemo - memoize computations</li>
+    <li>useCallback - memoize functions</li>
+    <li>useReducer - for when useState isn't enough</li>
+    <li>useContext - consume React context</li>
+  </Appear>
+</ul>
+
+---
+
+# The Special Sauce of `useEffect`
+
+<CodeBlock>{`useEffect(function, dependencies?)`}</CodeBlock>
+
+---
+
+# When effects run
+
+<CodeBlock>
+  {`const App = () => {
+  // Runs every render as no
+  // dependencies were provided
+  useEffect(() => {
+    console.log('every render');
+  });\n
+  return (
+    <p>Every render</p>
+  );
+}
+`}
+</CodeBlock>
+
+<Notes>Uncommon, generally not to be used unless you have specific intent</Notes>
+
+---
+
+# When effects run
+
+<CodeBlock>
+  {`const App = () => {
+  // Run on first render only as
+  // dependencies array is empty
+  useEffect(() => {
+    document.title = 'Rendered';
+  }, []);\n
+  return (
+    <p>First render only</p>
+  );
+}
+`}
+</CodeBlock>
+
+---
+
+# When effects run
+
+<CodeBlock>
+  {`const App: React.FC<Props> = (props) => {
+  const { value } = props;
+  // Run on the first render
+  // and when 'value' changes
+  useEffect(() => {
+    console.log('Rendered', value);
+  }, [value]);\n
+  return (
+    <p>When {value} changes</p>
+  );
+}
+`}
+</CodeBlock>
+
+---
+
+# Cleaning Up
+
+<CodeBlock>
+  {`const App: React.FC<Props> = (props) => {
+  // setup a timer to run after one second
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('This will run after 1 second!')
+    }, 1000);
+    // return function called on unmount
+    return () => clearTimeout(timer);
+  }, []);\n
+  return (
+    <p>Cleaning up</p>
+  );
+}
+`}
+</CodeBlock>
+
+---
+
+# Colocating Lifecycle Logic
+
+<Horizontal>
+
+<CodeBlock>
+  {`class App extends Component {
+  timer = undefined;\n
+  componentDidMount = () => {
+    this.timer = setTimeout(() => {
+      console.log('This will run after 1 second!')
+    }, 1000);
+  };\n
+  componentWillUnmount = () => {
+    clearTimeout(this.timer);
+  };\n
+}`}
+</CodeBlock>
+
+<CodeBlock>
+  {`const App: React.FC<Props> = (props) => {\n
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      console.log('This will run after 1 second!')
+    }, 1000);\n
+    return () => clearTimeout(timer);
+  }, []);\n
+}
+`}
+</CodeBlock>
+
+</Horizontal>
+
+---
+
+# Colocating Lifecycle Logic
+
+<CodeBlock>
+  {`class Example extends React.Component {
+  state = { count: 0 };
+  componentDidMount() {
+    document.title = \`You clicked $\{this.state.count\} times\`;
+  }\n
+  componentDidUpdate() {
+    document.title = \`You clicked $\{this.state.count\} times\`;
+  }\n
+  render() {
+    return (
+      <div>
+        <p>You clicked {this.state.count} times</p>
+        <button onClick={() => this.setState({ count: this.state.count + 1 })}>
+          Click me
+        </button>
+      </div>
+    );
+  }
+}`}
+</CodeBlock>
+
+---
+
+# Colocating Lifecycle Logic
+
+<CodeBlock>
+  {`const Example = () => {
+  const [count, setCount] = useState(0);\n
+  useEffect(() => {
+    document.title = \`You clicked $\{count\} times\`;
+  });\n
+  return (
+    <div>
+      <p>You clicked {count} times</p>
+      <button onClick={() => setCount(count + 1)}>
+        Click me
+      </button>
+    </div>
+  );
+}`}
+</CodeBlock>
+
+<Notes>About 45 minutes to here</Notes>
+
+---
+
+# One Function Component Gotcha
+
+---
+
+# One Function Component Gotcha
+
+<CodeBlock>
+  {`const VideoChat = () => {
+  const [username, setUsername] = useState('');
+  const [roomName, setRoomName] = useState('');
+  const [token, setToken] = useState(null);\n
+  const handleUsernameChange = useCallback(event => {
+    setUsername(event.target.value);
+  }, []);\n
+  const handleRoomNameChange = useCallback(event => {
+    setRoomName(event.target.value);
+  }, []);\n
+  return <div></div> // we'll build up our response later
+};`}
+</CodeBlock>
+
+<Notes>
+  New render means functions are redefined, sometimes that's undesirable, wrap your func in
+  useCallback. Thanks Twilio
+</Notes>
+
+---
+
+# Sharing Logic with Hooks
+
+---
+
+# The Problem
+
+I had three minimally different registration<br/>
+pages with five to six fields, two requiring validation.
+
+---
+
+# Sharing Logic with Hooks
+
+<CodeBlock>
+  {`// validation.ts
+export const validation = {
+  email,
+  password
+};
+function email(email:string) {
+  const emailRex = /\\S+@\\S+\\.\\S+/;
+  return emailRex.test(email);
+}
+function password(password:string) {
+  const re = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.{6,})/g;
+  return re.test(password);
+}
+`}
+</CodeBlock>
+
+---
+
+# Registration Example
+
+<CodeBlock>
+  {`class Registration extends Component<{}, State> {
+  state = { name: '', email: '', emailValid: undefined };\n
+  onChange = (e: FormEvent<HTMLInputElement>) => {
+    const { name, value } = e.currentTarget;
+    this.setState({ [name]: value });
+    if (name === 'email') {
+      const emailValid = validation.email(value);
+      this.setState({ emailValid });
+    }
+  };\n
+  onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };\n
+  render() {
+    const { name, email } = this.state;
+    return (
+      <form onSubmit={this.onSubmit}>
+        <input type="string" name="name" onChange={this.onChange} value={name} />
+        <input type="email" name="email" onChange={this.onChange} value={email} />
+      </form>
+    );
+  }
+}`}
+</CodeBlock>
+
+---
+
+# Registration as Function Component
+
+<CodeBlock>
+  {`const Registration: React.FC = () => {
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [valid, setValid] = useState<undefined | boolean>(undefined);\n
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };\n
+  return (
+    <form onSubmit={onSubmit}>
+      <input name="name" value={name} onChange={e => setName(e.currentTarget.value)} />
+      <input
+        name="email"
+        value={email}
+        onChange={e => {
+          const valid = validation.email(e.currentTarget.value);
+          setEmail(e.currentTarget.value);
+          setValid(valid);
+        }}
+      />
+    </form>
+  );
+};`}
+</CodeBlock>
+
+---
+
+# Custom Hook to the Rescue
+
+<CodeBlock>
+  {`export function useRegistration(): IUseRegistration {
+  const [name, setName] = useState('');
+  const [email, _setEmail] = useState('');
+  const [valid, setValid] = useState<undefined | boolean>(undefined);\n
+  const setEmail = (value: string) => {
+    const valid = validation.email(value);
+    _setEmail(value);
+    setValid(valid);
+  };\n
+  return { name, setName, valid, setEmail };
+}
+`}
+</CodeBlock>
+
+---
+
+# Putting Hooks to Work
+
+<CodeBlock>
+  {`const Registration: React.FC = () => {
+  const { name, setName, email, valid, setEmail } = useRegistration();\n
+  const onSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+  };\n
+  return (
+    <form onSubmit={onSubmit}>
+      <input name="name" value={name} onChange={e => setName(e.currentTarget.value)} />
+      <input name="email" value={email} onChange={e => setEmail(e.currentTarget.value)} />
+    </form>
+  );
+};`}
+</CodeBlock>
+
+---
+
+# In Summary
+
+- Understand the component lifecycle
+- Write Functional Programming style code
+- Use tools like `create-react-app` to spare brain power
+- Create conventional and consistent component APIs
+- Write semantic HTML and use Fragments
+- ABD
+- Decompose components when it makes sense
+- Prefer function components and hooks over classes and HOCs
+- Write custom hooks to prevent repeating logic
+
+---
+
+# End
