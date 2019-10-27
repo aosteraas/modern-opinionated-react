@@ -1,0 +1,194 @@
+import { Image, Notes, Appear, Split, Horizontal } from 'mdx-deck';
+import keyboard from '../static/keyboard.png';
+import { DeclaringComponents, CodeBlock, Care, Lifecycle } from './components';
+import { theme as _theme } from './theme';
+
+export const theme = _theme;
+
+# Functions Over Classes
+
+<Appear>
+<div>
+<Care />
+</div>
+<h2>Class Abuse Resistance Education</h2>
+
+</Appear>
+
+---
+
+# Class Abuse Resistance Education
+
+<Image src={keyboard} size="50%" />
+
+---
+
+# Class Abuse Resistance Education
+
+<CodeBlock>
+  {`class AppKeyboard extends Component<Props> {
+  state = { layout: 'lock' };\n
+  componentDidUpdate = (prevProps: Props) => {
+    const { field, element, isActive } = this.props;
+    // if field has changed between renders and element isn't falsy
+    if (prevProps.field !== field && element) {
+      const { type, value } = element;
+      let layout = 'default';
+      // decide layout for the input that has been focused.
+      switch (type) {
+        case 'tel':
+        case 'number':
+          layout = 'number';
+          this.setState({ layout });
+          break;
+        case 'email':
+          this.setState({ layout });
+          break;
+        case 'text':
+          this.switchTitle(value);
+        default:
+          break;
+      }
+    }
+  };\n
+  switchTitle = (value: string) => {
+    // Set layout to lock to get upper case letter after a space.
+    if (value.endsWith(' ') || value === '') {
+      this.setState({ layout: 'lock' });
+    } else {
+      this.setState({ layout: 'default' });
+    }
+  }\n
+  onKeyPress = (button: string) => {
+    // ...Sending keystrokes and managing layout omitted...
+    // wait for 5 milliseconds for keyboard to populate value in input
+    if (this.props.element.type === 'text') {
+      setTimeout(() => {
+        this.switchTitle(this.props.element.value);
+      }, 5);
+    }
+  };\n
+  render() {
+    return (
+      <div id="keyboard">
+        <Keyboard
+          layout={keyboardLayout}
+          layoutName={this.state.layout}
+          inputName={this.props.field}
+          onKeyPress={(button: string) => this.onKeyPress(button)}
+          display={display}
+          buttonTheme={{ buttonTheme }}
+          mergeDisplay={true}
+          preventMouseDownDefault={true}
+          tabCharOnTab={false}
+        />
+      </div>
+    );
+  }
+}`}
+</CodeBlock>
+
+<Notes>
+  cDU could be called what layout should the KB use. cDU fired on each render, checks if field
+  changed, changes layout of keyboard or manages title case.
+</Notes>
+
+---
+
+# Class Abuse Resistance Education
+
+A lot can happen in five milliseconds
+
+<CodeBlock>
+  {`onKeyPress = (button: string) => {
+  // 'this' is mutable
+  if (this.props.element.type === 'text') {
+    setTimeout(() => {
+      // this.props.element.value is also mutable and
+      // subject to change at any time
+      this.switchTitle(this.props.element.value);
+    }, 5);
+  }
+};\n`}
+</CodeBlock>
+
+<Notes>
+  Last keystroke and hit tab, switch title fires and goes from number back to text. Effectively a
+  race condition.
+</Notes>
+
+---
+
+# Class Abuse Resistance Education
+
+<CodeBlock>
+{`const AppKeyboard: React.FC = () => {
+  // still managing layout in component state
+  const [layout, setLayout] = useState('lock');
+  // still pulling data from application (redux) state
+  const { isActive, field, element } = useSelector((s: AppState) => s.keyboard);\n
+  // omg it's a hook!
+  useEffect(() => {
+    if (element) {
+      const { type, value } = element;
+      let layout = 'default';
+      // decide layout for the input that has been focused.
+      switch (type) {
+        case 'tel':
+        case 'number':
+          layout = 'number';
+          setLayout(layout);
+          break;
+        case 'email':
+          setLayout(layout);
+          break;
+        case 'text':
+          switchTitle(value);
+        default:
+          break;
+      }
+    }
+  });\n
+  const switchTitle = (value: string) => {
+    // Set layout to lock to get upper case letter after a space.
+    if (value.endsWith(' ') || value === '') {
+      setLayout('lock');
+    } else {
+      setLayout('default');
+    }
+  };\n
+  const onKeyPress = (button: string) => {
+    // ...Sending keystrokes and managing layout omitted...
+  };
+  return (
+    <div id="keyboard">
+      <Keyboard
+        layout={keyboardLayout}
+        layoutName={layout}
+        inputName={field}
+        onKeyPress={(button: string) => onKeyPress(button)}
+        display={display}
+        buttonTheme={{ buttonTheme }}
+        mergeDisplay={true}
+        preventMouseDownDefault={true}
+        tabCharOnTab={false}
+      />
+    </div>
+  );
+};`}
+
+</CodeBlock>
+
+<Notes>
+  No need to define a Props interface. useEffect similar to componentDidMount, componentDidUpdate,
+  and componentWillUnmount combined. No need to think about timeouts in keypress. Allow component
+  lifecycle to handle those parts.
+</Notes>
+
+---
+
+# Function vs Class
+
+When a Class Component rerenders it's the same instance, _however_, each <br/>
+render of a Function Component means a new instance of the component <br/>
+and everything inside.
