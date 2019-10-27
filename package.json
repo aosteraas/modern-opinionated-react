@@ -21,7 +21,9 @@
     "deck": "mdx-deck slides/deck.mdx",
     "intro": "mdx-deck slides/intro.mdx",
     "essentials": "mdx-deck slides/essentials.mdx",
-    "mor": "mdx-deck slides/modern-opinionated-react.mdx"
+    "mor": "mdx-deck slides/modern-opinionated-react.mdx",
+    "care": "mdx-deck slides/care.mdx",
+    "hooks": "mdx-deck slides/hooks.mdx"
   },
   "eslintConfig": {
     "extends": "react-app"
